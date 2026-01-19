@@ -3,331 +3,138 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Path to Independence | Antoine</title>
-
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#1a1a1a" />
-
-  <style>
-    :root{
-      --bg: #f4f4f9;
-      --card: #ffffff;
-      --text: #222;
-      --muted: #555;
-      --border: #ddd;
-      --good: #2ecc71;
-      --bad: #e74c3c;
-      --blue: #3498db;
-      --gray: #95a5a6;
-    }
-    *{ box-sizing: border-box; }
-    body{
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      margin: 0;
-      padding: 20px;
-    }
-    .container{
-      max-width: 720px;
-      margin: auto;
-      background: var(--card);
-      padding: 28px;
-      border-radius: 14px;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.12);
-    }
-    h1{
-      text-align: center;
-      margin: 0;
-      font-size: 26px;
-      letter-spacing: 0.2px;
-      border-bottom: 2px solid #333;
-      padding-bottom: 10px;
-    }
-    .progress-container{
-      background: #e0e0e0;
-      border-radius: 20px;
-      height: 26px;
-      margin: 22px 0;
-      overflow: hidden;
-    }
-    #progress-bar{
-      background: var(--good);
-      height: 100%;
-      width: 0%;
-      transition: width 0.5s ease;
-    }
-    .center{
-      text-align: center;
-    }
-    .badge{
-      font-weight: bold;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 0.82em;
-      text-transform: uppercase;
-      display: inline-block;
-      margin-left: 10px;
-    }
-    .badge.locked{ background: var(--gray); color: #fff; }
-    .badge.active{ background: var(--blue); color: #fff; }
-    .badge.earned{ background: var(--good); color: #fff; }
-
-    .milestone{
-      margin-bottom: 22px;
-      padding: 16px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-    }
-    .milestone h3{
-      margin-top: 0;
-      color: #2c3e50;
-      font-size: 18px;
-    }
-    .task{
-      display: flex;
-      align-items: center;
-      margin: 10px 0;
-      cursor: pointer;
-      user-select: none;
-    }
-    .task input[type="checkbox"]{
-      transform: scale(1.4);
-      margin-right: 14px;
-      cursor: pointer;
-    }
-    .muted{ color: var(--muted); font-size: 0.95em; }
-    .violation-warning{
-      background: #fff3f3;
-      border-left: 5px solid var(--bad);
-      padding: 12px;
-      font-size: 0.92em;
-      margin-top: 18px;
-    }
-    .row{
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 18px;
-    }
-    button{
-      border: 0;
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-    }
-    button.primary{ background: #1a1a1a; color: #fff; }
-    button.secondary{ background: #eee; color: #333; }
-    .toast{
-      position: fixed;
-      left: 50%;
-      bottom: 18px;
-      transform: translateX(-50%);
-      background: #111;
-      color: #fff;
-      padding: 10px 14px;
-      border-radius: 12px;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.3);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-      font-size: 0.95em;
-    }
-    .toast.show{ opacity: 1; pointer-events: auto; }
-  </style>
+  <title>Path to Independence</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Independence Progression</h1>
+  <div class="glow-bg"></div>
 
-    <div class="progress-container">
-      <div id="progress-bar"></div>
-    </div>
-    <p class="center" style="font-weight: bold;">
-      Overall Progress: <span id="progress-text">0%</span>
-    </p>
+  <div class="app">
+    <header class="topbar">
+      <div class="logo">
+        <div class="logo-icon">PV</div>
+        <div class="logo-text">
+          <div class="logo-title">Path to Independence</div>
+          <div class="logo-subtitle">The Journey to Financial Stability</div>
+        </div>
+      </div>
 
-    <div class="violation-warning">
-      <strong>Zero-Tolerance Alert:</strong> Any digital spending (TikTok/Games) resets Milestone 1 and 2 progress immediately.
-    </div>
+      <div class="topbar-right">
+        <button class="icon-btn" id="soundToggle" title="Toggle sounds">
+          🔊
+        </button>
+      </div>
+    </header>
 
-    <div class="milestone" data-milestone="1">
-      <h3>
-        Milestone 1: Stability
-        <span class="badge active" id="badge-1">Active</span>
-      </h3>
-      <label class="task"><input type="checkbox" class="step" data-step="1"> Account Balance Positive</label>
-      <label class="task"><input type="checkbox" class="step" data-step="2"> Rent Paid (Current Month)</label>
-      <label class="task"><input type="checkbox" class="step" data-step="3"> Wed. Meeting Compliance (4 Weeks)</label>
-      <p class="muted"><em>Reward: Internet & Power Maintained</em></p>
-    </div>
+    <main class="panel">
+      <div class="tabs" role="tablist" aria-label="Main tabs">
+        <button class="tab active" data-tab="progress" role="tab" aria-selected="true">Progress</button>
+        <button class="tab" data-tab="contract" role="tab" aria-selected="false">Contract</button>
+        <button class="tab" data-tab="settings" role="tab" aria-selected="false">Settings</button>
+      </div>
 
-    <div class="milestone" data-milestone="2">
-      <h3>
-        Milestone 2: Financial Discipline
-        <span class="badge locked" id="badge-2">Locked</span>
-      </h3>
-      <label class="task"><input type="checkbox" class="step" data-step="4"> $1,000 Savings Goal Met</label>
-      <label class="task"><input type="checkbox" class="step" data-step="5"> No Digital Spending Violations</label>
-      <p class="muted"><em>Reward: Trust Review & Spending Policy Adjustment</em></p>
-    </div>
+      <section class="tab-content" id="progress" data-tab-content>
+        <div class="progress-card">
+          <div class="card-header">
+            <div class="card-title">Mission Tracker</div>
+            <div class="card-subtitle">Your path is getting brighter</div>
+          </div>
 
-    <div class="milestone" data-milestone="3">
-      <h3>
-        Milestone 3: Responsibility
-        <span class="badge locked" id="badge-3">Locked</span>
-      </h3>
-      <label class="task"><input type="checkbox" class="step" data-step="6"> Personal Car Insurance Proof</label>
-      <label class="task"><input type="checkbox" class="step" data-step="7"> Consistent Full-Time Employment</label>
-      <p class="muted"><em>Reward: Expanded Vehicle Privileges</em></p>
-    </div>
+          <div class="progress-row">
+            <div class="progress-label">Savings</div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="savingsFill"></div>
+            </div>
+            <div class="progress-value" id="savingsValue">$0</div>
+          </div>
 
-    <div class="row">
-      <button class="primary" id="resetBtn">Reset Progress</button>
-      <button class="secondary" id="spendBtn">Report Digital Spending (Resets M1 & M2)</button>
-    </div>
+          <div class="progress-row">
+            <div class="progress-label">Debt</div>
+            <div class="progress-bar">
+              <div class="progress-fill debt" id="debtFill"></div>
+            </div>
+            <div class="progress-value" id="debtValue">$0</div>
+          </div>
+
+          <div class="progress-row">
+            <div class="progress-label">Income</div>
+            <div class="progress-bar">
+              <div class="progress-fill income" id="incomeFill"></div>
+            </div>
+            <div class="progress-value" id="incomeValue">$0</div>
+          </div>
+
+          <div class="actions">
+            <button class="btn primary" id="updateDemo">Run Demo Update</button>
+            <button class="btn" id="resetDemo">Reset</button>
+          </div>
+
+          <div class="hint">
+            Tip: Use the demo update to see the interface animate.
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-content hidden" id="contract" data-tab-content>
+        <div class="contract-card">
+          <div class="card-header">
+            <div class="card-title">Contract</div>
+            <div class="card-subtitle">The rules of the quest</div>
+          </div>
+
+          <div class="contract-actions">
+            <button class="btn primary" id="downloadContract">Download as PDF</button>
+            <button class="btn" id="copyContract">Copy to clipboard</button>
+          </div>
+
+          <div class="contract-viewer" id="contractViewer" tabindex="0">
+            <!-- Contract text inserted by JS -->
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-content hidden" id="settings" data-tab-content>
+        <div class="settings-card">
+          <div class="card-header">
+            <div class="card-title">Settings</div>
+            <div class="card-subtitle">Customize your UI</div>
+          </div>
+
+          <div class="setting-row">
+            <label class="setting-label" for="themeSelect">Theme</label>
+            <select class="select" id="themeSelect">
+              <option value="neon">Neon Cyber</option>
+              <option value="matrix">Matrix Green</option>
+              <option value="night">Night Mode</option>
+            </select>
+          </div>
+
+          <div class="setting-row">
+            <label class="setting-label" for="contractMode">Contract Mode</label>
+            <select class="select" id="contractMode">
+              <option value="simple">Simple</option>
+              <option value="detailed">Detailed</option>
+            </select>
+          </div>
+
+          <div class="setting-row">
+            <label class="setting-label" for="autoSound">Auto sound</label>
+            <input type="checkbox" id="autoSound" checked />
+          </div>
+
+          <div class="hint">
+            These settings are saved locally in your browser.
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-left">Status: <span id="statusText">Online</span></div>
+      <div class="footer-right">© Phantom Vista</div>
+    </footer>
   </div>
 
-  <div class="toast" id="toast"></div>
-
-  <script>
-    const storageKey = "pathToIndependence_v1";
-
-    const state = {
-      checkedSteps: [],
-      lastSpendReset: null
-    };
-
-    function showToast(msg){
-      const toast = document.getElementById("toast");
-      toast.innerText = msg;
-      toast.classList.add("show");
-      setTimeout(()=> toast.classList.remove("show"), 2200);
-    }
-
-    function saveState(){
-      localStorage.setItem(storageKey, JSON.stringify(state));
-    }
-
-    function loadState(){
-      const saved = localStorage.getItem(storageKey);
-      if(!saved) return;
-      try{
-        const parsed = JSON.parse(saved);
-        if(parsed.checkedSteps) state.checkedSteps = parsed.checkedSteps;
-        if(parsed.lastSpendReset) state.lastSpendReset = parsed.lastSpendReset;
-      }catch(e){
-        // ignore
-      }
-    }
-
-    function applyState(){
-      document.querySelectorAll(".step").forEach(cb => {
-        const stepId = cb.getAttribute("data-step");
-        cb.checked = state.checkedSteps.includes(stepId);
-      });
-    }
-
-    function updateProgress(){
-      const allSteps = document.querySelectorAll(".step");
-      const checked = document.querySelectorAll(".step:checked");
-      const percentage = Math.round((checked.length / allSteps.length) * 100);
-
-      document.getElementById("progress-bar").style.width = percentage + "%";
-      document.getElementById("progress-text").innerText = percentage + "%";
-
-      // milestone badges
-      const badge1 = document.getElementById("badge-1");
-      const badge2 = document.getElementById("badge-2");
-      const badge3 = document.getElementById("badge-3");
-
-      // milestone 1 earned when first 3 steps are done
-      const milestone1Done = ["1","2","3"].every(id => document.querySelector(`.step[data-step="${id}"]`).checked);
-      const milestone2Done = ["4","5"].every(id => document.querySelector(`.step[data-step="${id}"]`).checked);
-      const milestone3Done = ["6","7"].every(id => document.querySelector(`.step[data-step="${id}"]`).checked);
-
-      if(milestone1Done){
-        badge1.className = "badge earned";
-        badge1.innerText = "Earned";
-        badge2.className = "badge active";
-        badge2.innerText = "Active";
-      } else {
-        badge1.className = "badge active";
-        badge1.innerText = "Active";
-        badge2.className = "badge locked";
-        badge2.innerText = "Locked";
-      }
-
-      if(milestone2Done){
-        badge2.className = "badge earned";
-        badge2.innerText = "Earned";
-        badge3.className = "badge active";
-        badge3.innerText = "Active";
-      } else if(milestone1Done){
-        badge3.className = "badge locked";
-        badge3.innerText = "Locked";
-      } else {
-        badge3.className = "badge locked";
-        badge3.innerText = "Locked";
-      }
-
-      // enforce lock: steps 4+ disabled until milestone1 is done
-      const locked = !milestone1Done;
-      ["4","5","6","7"].forEach(id => {
-        const cb = document.querySelector(`.step[data-step="${id}"]`);
-        cb.disabled = locked;
-        cb.parentElement.style.opacity = locked ? 0.6 : 1;
-      });
-
-      // milestone 3 locked until milestone2 done
-      const locked3 = !milestone2Done;
-      ["6","7"].forEach(id => {
-        const cb = document.querySelector(`.step[data-step="${id}"]`);
-        cb.disabled = locked || locked3;
-        cb.parentElement.style.opacity = (locked || locked3) ? 0.6 : 1;
-      });
-
-      // save checked list
-      state.checkedSteps = Array.from(checked).map(cb => cb.getAttribute("data-step"));
-      saveState();
-    }
-
-    function resetProgress(){
-      document.querySelectorAll(".step").forEach(cb => cb.checked = false);
-      state.checkedSteps = [];
-      saveState();
-      updateProgress();
-      showToast("Progress reset.");
-    }
-
-    function spendReset(){
-      // uncheck milestone 1 and 2 steps
-      ["1","2","3","4","5"].forEach(id => {
-        const cb = document.querySelector(`.step[data-step="${id}"]`);
-        if(cb) cb.checked = false;
-      });
-      state.checkedSteps = Array.from(document.querySelectorAll(".step:checked")).map(cb => cb.getAttribute("data-step"));
-      state.lastSpendReset = new Date().toISOString();
-      saveState();
-      updateProgress();
-      showToast("Digital spending reported. Milestone 1 & 2 reset.");
-    }
-
-    // events
-    document.getElementById("resetBtn").addEventListener("click", resetProgress);
-    document.getElementById("spendBtn").addEventListener("click", spendReset);
-
-    document.querySelectorAll(".step").forEach(cb => {
-      cb.addEventListener("change", updateProgress);
-    });
-
-    // load
-    loadState();
-    applyState();
-    updateProgress();
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>
