@@ -1,140 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Path to Independence</title>
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Path to Independence | Antoine</title>
+<style>
+  :root {
+    --bg: #05050a; --card: #0f1020; --text: #e9e9ff; --accent: #7c5cff; --secondary: #22d3ee;
+  }
+  /* Themes */
+  [data-theme="Stealth"] { --bg: #0a0a0a; --card: #1a1a1a; --accent: #555; --secondary: #888; }
+  [data-theme="Crimson"] { --bg: #0f0505; --card: #200f0f; --accent: #ff5c5c; --secondary: #ee2222; }
+
+  body { margin:0; font-family: sans-serif; background: var(--bg); color: var(--text); transition: 0.3s; }
+  .wrap { max-width: 800px; margin: auto; padding: 20px; }
+  .nav { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+  .tab-btn { padding: 10px 20px; border: 1px solid var(--accent); background: var(--card); color: #fff; cursor: pointer; border-radius: 8px; }
+  .tab-btn.active { background: var(--accent); box-shadow: 0 0 15px var(--accent); }
+  
+  .panel { background: var(--card); padding: 25px; border-radius: 15px; border: 1px solid #2a2a44; }
+  .stat-row { margin: 15px 0; }
+  .bar-bg { background: #222; height: 12px; border-radius: 6px; overflow: hidden; margin-top: 5px; }
+  .bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--secondary)); width: 0%; transition: 0.5s; }
+  
+  input[type="number"], input[type="file"], select { background: #000; color: #fff; border: 1px solid var(--accent); padding: 8px; border-radius: 5px; width: 100%; margin-top: 5px; }
+  .hidden { display: none; }
+  .btn-action { background: var(--accent); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+</style>
 </head>
-<body>
-  <div class="glow-bg"></div>
+<body data-theme="Neon Cyber">
 
-  <div class="app">
-    <header class="topbar">
-      <div class="logo">
-        <div class="logo-icon">PV</div>
-        <div class="logo-text">
-          <div class="logo-title">Path to Independence</div>
-          <div class="logo-subtitle">The Journey to Financial Stability</div>
-        </div>
-      </div>
-
-      <div class="topbar-right">
-        <button class="icon-btn" id="soundToggle" title="Toggle sounds">
-          🔊
-        </button>
-      </div>
-    </header>
-
-    <main class="panel">
-      <div class="tabs" role="tablist" aria-label="Main tabs">
-        <button class="tab active" data-tab="progress" role="tab" aria-selected="true">Progress</button>
-        <button class="tab" data-tab="contract" role="tab" aria-selected="false">Contract</button>
-        <button class="tab" data-tab="settings" role="tab" aria-selected="false">Settings</button>
-      </div>
-
-      <section class="tab-content" id="progress" data-tab-content>
-        <div class="progress-card">
-          <div class="card-header">
-            <div class="card-title">Mission Tracker</div>
-            <div class="card-subtitle">Your path is getting brighter</div>
-          </div>
-
-          <div class="progress-row">
-            <div class="progress-label">Savings</div>
-            <div class="progress-bar">
-              <div class="progress-fill" id="savingsFill"></div>
-            </div>
-            <div class="progress-value" id="savingsValue">$0</div>
-          </div>
-
-          <div class="progress-row">
-            <div class="progress-label">Debt</div>
-            <div class="progress-bar">
-              <div class="progress-fill debt" id="debtFill"></div>
-            </div>
-            <div class="progress-value" id="debtValue">$0</div>
-          </div>
-
-          <div class="progress-row">
-            <div class="progress-label">Income</div>
-            <div class="progress-bar">
-              <div class="progress-fill income" id="incomeFill"></div>
-            </div>
-            <div class="progress-value" id="incomeValue">$0</div>
-          </div>
-
-          <div class="actions">
-            <button class="btn primary" id="updateDemo">Run Demo Update</button>
-            <button class="btn" id="resetDemo">Reset</button>
-          </div>
-
-          <div class="hint">
-            Tip: Use the demo update to see the interface animate.
-          </div>
-        </div>
-      </section>
-
-      <section class="tab-content hidden" id="contract" data-tab-content>
-        <div class="contract-card">
-          <div class="card-header">
-            <div class="card-title">Contract</div>
-            <div class="card-subtitle">The rules of the quest</div>
-          </div>
-
-          <div class="contract-actions">
-            <button class="btn primary" id="downloadContract">Download as PDF</button>
-            <button class="btn" id="copyContract">Copy to clipboard</button>
-          </div>
-
-          <div class="contract-viewer" id="contractViewer" tabindex="0">
-            <!-- Contract text inserted by JS -->
-          </div>
-        </div>
-      </section>
-
-      <section class="tab-content hidden" id="settings" data-tab-content>
-        <div class="settings-card">
-          <div class="card-header">
-            <div class="card-title">Settings</div>
-            <div class="card-subtitle">Customize your UI</div>
-          </div>
-
-          <div class="setting-row">
-            <label class="setting-label" for="themeSelect">Theme</label>
-            <select class="select" id="themeSelect">
-              <option value="neon">Neon Cyber</option>
-              <option value="matrix">Matrix Green</option>
-              <option value="night">Night Mode</option>
-            </select>
-          </div>
-
-          <div class="setting-row">
-            <label class="setting-label" for="contractMode">Contract Mode</label>
-            <select class="select" id="contractMode">
-              <option value="simple">Simple</option>
-              <option value="detailed">Detailed</option>
-            </select>
-          </div>
-
-          <div class="setting-row">
-            <label class="setting-label" for="autoSound">Auto sound</label>
-            <input type="checkbox" id="autoSound" checked />
-          </div>
-
-          <div class="hint">
-            These settings are saved locally in your browser.
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="footer">
-      <div class="footer-left">Status: <span id="statusText">Online</span></div>
-      <div class="footer-right">© Phantom Vista</div>
-    </footer>
+<div class="wrap">
+  <div style="text-align:center; margin-bottom:20px;">
+    <h1>PATH TO INDEPENDENCE</h1>
+    <button id="startAudio" class="btn-action" style="width:auto; padding: 5px 15px;">Enable Audio System</button>
   </div>
 
-  <script src="app.js"></script>
+  <div class="nav">
+    <button class="tab-btn active" onclick="showTab('progress')">Progress</button>
+    <button class="tab-btn" onclick="showTab('contract')">Contract</button>
+    <button class="tab-btn" onclick="showTab('settings')">Settings</button>
+  </div>
+
+  <div id="progress" class="panel">
+    <h3>Mission Tracker</h3>
+    <div class="stat-row">
+        <label>Savings Goal ($1,000)</label>
+        <input type="number" id="saveInput" value="0" oninput="updateStats()">
+        <div class="bar-bg"><div id="saveBar" class="bar-fill"></div></div>
+    </div>
+    <div class="stat-row">
+        <label>Weekly Debt/Bills</label>
+        <input type="number" id="debtInput" value="0" oninput="updateStats()">
+        <div class="bar-bg"><div id="debtBar" class="bar-fill" style="background: #e74c3c"></div></div>
+    </div>
+  </div>
+
+  <div id="contract" class="panel hidden">
+    <h3>Contract Control</h3>
+    <input type="file" id="contractFile" accept=".txt">
+    <div id="contractDisplay" style="background:#000; padding:10px; height:150px; overflow-y:auto; margin-top:10px; font-size:12px; border:1px solid #333;">
+        Upload contract text file to review terms...
+    </div>
+    <label style="display:block; margin-top:15px;">
+        <input type="checkbox" id="agreeCheck" onclick="playEffect('click')"> I agree to these terms as a legally binding household agreement.
+    </label>
+  </div>
+
+  <div id="settings" class="panel hidden">
+    <h3>System Settings</h3>
+    <label>Theme</label>
+    <select id="themeSelect" onchange="changeTheme()">
+        <option>Neon Cyber</option>
+        <option>Stealth</option>
+        <option>Crimson</option>
+    </select>
+    <label style="display:block; margin-top:15px;">
+        <input type="checkbox" id="musicToggle" onclick="toggleMusic()"> Lo-fi Background Music
+    </label>
+  </div>
+</div>
+
+<script>
+  // Audio Assets
+  const bgm = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3'); // Lo-fi placeholder
+  bgm.loop = true;
+  const sfx = {
+    click: new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3'),
+    upgrade: new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3')
+  };
+
+  document.getElementById('startAudio').onclick = () => {
+    bgm.play(); bgm.pause(); // Initialize
+    document.getElementById('startAudio').innerText = "System Online";
+  };
+
+  function showTab(id) {
+    playEffect('click');
+    document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.remove('hidden');
+    event.target.classList.add('active');
+  }
+
+  function updateStats() {
+    const savings = document.getElementById('saveInput').value;
+    const savePercent = Math.min((savings / 1000) * 100, 100);
+    document.getElementById('saveBar').style.width = savePercent + '%';
+    if(savePercent >= 100) playEffect('upgrade');
+    localStorage.setItem('savings', savings);
+  }
+
+  function changeTheme() {
+    const theme = document.getElementById('themeSelect').value;
+    document.body.setAttribute('data-theme', theme);
+    playEffect('click');
+  }
+
+  function toggleMusic() {
+    const musicOn = document.getElementById('musicToggle').checked;
+    musicOn ? bgm.play() : bgm.pause();
+  }
+
+  function playEffect(type) {
+    sfx[type].currentTime = 0;
+    sfx[type].play();
+  }
+
+  // File Reader for Contract
+  document.getElementById('contractFile').addEventListener('change', function(e) {
+    const reader = new FileReader();
+    reader.onload = function() {
+      document.getElementById('contractDisplay').innerText = reader.result;
+    };
+    reader.readAsText(e.target.files[0]);
+  });
+</script>
 </body>
 </html>
