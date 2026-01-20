@@ -7,218 +7,196 @@
 
 <style>
 :root {
-  --bg:#05050a;
-  --card:#0f1020;
-  --text:#e9e9ff;
-  --accent:#7c5cff;
-  --secondary:#22d3ee;
+  --bg0: #05050a; --bg1: #0a0a14;
+  --card: rgba(15, 16, 32, 0.7);
+  --text: #e9e9ff; --muted: #a9a9c7;
+  --border: #2a2a44; --accent: #7c5cff;
+  --secondary: #22d3ee; --glow: rgba(124, 92, 255, 0.5);
 }
 
 /* THEMES */
-[data-theme="Stealth"] {
-  --bg:#0a0a0a;
-  --card:#1a1a1a;
-  --accent:#555;
-  --secondary:#888;
-}
-
-[data-theme="Crimson"] {
-  --bg:#0f0505;
-  --card:#200f0f;
-  --accent:#ff5c5c;
-  --secondary:#ee2222;
-}
+[data-theme="Stealth"] { --bg0: #0a0a0a; --bg1: #111; --accent: #555; --secondary: #888; --glow: rgba(255,255,255,0.1); }
+[data-theme="Crimson"] { --bg0: #0f0505; --bg1: #1a0505; --accent: #ff5c5c; --secondary: #ee2222; --glow: rgba(255, 92, 92, 0.5); }
 
 body {
-  margin:0;
-  font-family: system-ui, sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  transition:.3s;
+  margin: 0; font-family: ui-sans-serif, system-ui, sans-serif;
+  background: radial-gradient(1200px 700px at 20% 10%, rgba(124,92,255,0.15), transparent 50%),
+              radial-gradient(900px 600px at 80% 20%, rgba(34,211,238,0.1), transparent 50%),
+              linear-gradient(180deg, var(--bg0), var(--bg1));
+  color: var(--text); min-height: 100vh; transition: 0.3s ease;
 }
 
-.wrap {
-  max-width:900px;
-  margin:auto;
-  padding:20px;
+.wrap { max-width: 900px; margin: auto; padding: 30px 15px; }
+
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 15px; background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; backdrop-filter: blur(10px); margin-bottom: 20px;
 }
 
-h1 {
-  text-align:center;
-  letter-spacing:2px;
+.logo-box {
+  width: 45px; height: 45px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), var(--secondary));
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; color: #000; box-shadow: 0 0 15px var(--glow);
 }
 
-.nav {
-  display:flex;
-  justify-content:center;
-  gap:10px;
-  margin:20px 0;
-}
-
+.nav { display: flex; justify-content: center; gap: 12px; margin-bottom: 20px; }
 .tab-btn {
-  padding:10px 20px;
-  background:var(--card);
-  border:1px solid var(--accent);
-  color:white;
-  cursor:pointer;
-  border-radius:8px;
+  padding: 10px 24px; background: var(--card); border: 1px solid var(--border);
+  color: var(--text); cursor: pointer; border-radius: 12px; font-weight: 600;
+  transition: 0.2s; backdrop-filter: blur(5px);
 }
-
 .tab-btn.active {
-  background:var(--accent);
-  box-shadow:0 0 15px var(--accent);
+  background: var(--accent); border-color: var(--accent);
+  box-shadow: 0 0 20px var(--glow); transform: translateY(-2px);
 }
 
 .panel {
-  background:var(--card);
-  border-radius:15px;
-  padding:25px;
-  border:1px solid #2a2a44;
+  background: var(--card); border-radius: 20px; padding: 25px;
+  border: 1px solid var(--border); backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
+.hidden { display: none; }
 
-.hidden { display:none; }
-
-.stat-row { margin:15px 0; }
-
-.bar-bg {
-  background:#222;
-  height:12px;
-  border-radius:6px;
-  overflow:hidden;
-  margin-top:5px;
-}
-
+.bar-bg { background: rgba(0,0,0,0.3); height: 16px; border-radius: 8px; overflow: hidden; margin-top: 10px; border: 1px solid var(--border); }
 .bar-fill {
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,var(--accent),var(--secondary));
-  transition:.5s;
+  height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--secondary));
+  transition: 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67); box-shadow: 0 0 15px var(--glow);
 }
 
 input, select {
-  width:100%;
-  padding:8px;
-  background:black;
-  color:white;
-  border:1px solid var(--accent);
-  border-radius:6px;
-  margin-top:5px;
+  width: 100%; padding: 12px; background: rgba(0,0,0,0.5); color: #fff;
+  border: 1px solid var(--border); border-radius: 8px; margin-top: 8px;
 }
 
 .btn {
-  margin-top:15px;
-  padding:12px;
-  width:100%;
-  background:var(--accent);
-  border:none;
-  color:white;
-  font-weight:bold;
-  border-radius:8px;
-  cursor:pointer;
+  margin-top: 20px; padding: 14px; width: 100%; font-weight: 800;
+  background: linear-gradient(90deg, var(--accent), var(--secondary));
+  border: none; color: #000; border-radius: 10px; cursor: pointer;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+
+#contractDisplay {
+  background: rgba(0,0,0,0.4); border: 1px solid var(--border);
+  padding: 15px; border-radius: 8px; height: 200px; overflow-y: auto;
+  font-family: monospace; font-size: 13px;
 }
 </style>
 </head>
 
 <body>
-
 <div class="wrap">
+  <header>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div class="logo-box">PI</div>
+      <div>
+        <h2 style="margin:0; font-size:18px;">Independence Command</h2>
+        <p style="margin:0; font-size:12px; color:var(--muted);">Status: Monitoring Actions</p>
+      </div>
+    </div>
+  </header>
 
-<h1>PATH TO INDEPENDENCE</h1>
-
-<button class="btn" id="startAudio">START SYSTEM</button>
-
-<div class="nav">
-  <button class="tab-btn active" onclick="showTab('progress',this)">Progress</button>
-  <button class="tab-btn" onclick="showTab('contract',this)">Contract</button>
-  <button class="tab-btn" onclick="showTab('settings',this)">Settings</button>
-</div>
-
-<!-- PROGRESS -->
-<div id="progress" class="panel">
-  <h3>Mission Tracker</h3>
-
-  <div class="stat-row">
-    <label>Savings ($1,000 Goal)</label>
-    <input type="number" id="savingsInput" value="0" oninput="updateProgress()">
-    <div class="bar-bg"><div id="savingsBar" class="bar-fill"></div></div>
-  </div>
-</div>
-
-<!-- CONTRACT -->
-<div id="contract" class="panel hidden">
-  <h3>Contract Control</h3>
-
-  <input type="file" id="contractFile" accept=".txt">
-
-  <div id="contractDisplay"
-       style="margin-top:10px; background:black; padding:10px; height:150px; overflow:auto; font-size:12px;">
-    Upload contract text to review terms.
+  <div class="nav">
+    <button class="tab-btn active" onclick="showTab('progress',this)">Progress</button>
+    <button class="tab-btn" onclick="showTab('contract',this)">Contract</button>
+    <button class="tab-btn" onclick="showTab('settings',this)">Settings</button>
   </div>
 
-  <label style="margin-top:15px; display:block;">
-    <input type="checkbox" id="agreeCheck"> I agree to this legally binding agreement.
-  </label>
-</div>
+  <div id="progress" class="panel">
+    <h3><span style="color:var(--secondary)">></span> Mission Tracker</h3>
+    <div style="margin: 20px 0;">
+      <label>Current Savings (Goal: $1,000)</label>
+      <input type="number" id="savingsInput" placeholder="Update balance..." oninput="updateProgress()">
+      <div class="bar-bg"><div id="savingsBar" class="bar-fill"></div></div>
+    </div>
+    <p style="font-size:13px; color:var(--muted);">TikTok spending detected on Jan 18. Milestone reset active until verification.</p>
+  </div>
 
-<!-- SETTINGS -->
-<div id="settings" class="panel hidden">
-  <h3>System Settings</h3>
+  <div id="contract" class="panel hidden">
+    <h3><span style="color:var(--secondary)">></span> Legal Terms</h3>
+    <input type="file" id="contractFile" accept=".txt">
+    <div id="contractDisplay" style="margin-top:15px;">Review rules: Workouts, Food Pantry, and Wednesday Meetings.</div>
+    <label style="margin-top:20px; display:flex; align-items:center; gap:10px; cursor:pointer;">
+      <input type="checkbox" id="agreeCheck" style="width:20px; height:20px;" onchange="updateProgress()"> 
+      <span>I accept these terms as legally binding.</span>
+    </label>
+  </div>
 
-  <label>Theme</label>
-  <select id="themeSelect" onchange="changeTheme()">
-    <option value="">Neon</option>
-    <option value="Stealth">Stealth</option>
-    <option value="Crimson">Crimson</option>
-  </select>
-</div>
-
+  <div id="settings" class="panel hidden">
+    <h3><span style="color:var(--secondary)">></span> System Config</h3>
+    <label>Visual Theme</label>
+    <select id="themeSelect" onchange="changeTheme()">
+      <option value="">Neon Cyber</option>
+      <option value="Stealth">Stealth</option>
+      <option value="Crimson">Crimson</option>
+    </select>
+  </div>
 </div>
 
 <script>
 const bgm = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3");
 bgm.loop = true;
-const click = new Audio("https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3");
-const upgrade = new Audio("https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3");
+const clickSfx = new Audio("https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3");
+const upgradeSfx = new Audio("https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3");
 
-document.getElementById("startAudio").onclick = () => {
-  bgm.play(); bgm.pause();
-  document.getElementById("startAudio").innerText = "SYSTEM ONLINE";
-};
+let audioUnlocked = false;
+
+function unlockAudio() {
+  if (audioUnlocked) return;
+  bgm.volume = 0.4;
+  bgm.play().catch(() => {}); // Catch browser block just in case
+  audioUnlocked = true;
+}
 
 function showTab(id, btn) {
-  click.play();
-  document.querySelectorAll(".panel").forEach(p=>p.classList.add("hidden"));
-  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  unlockAudio();
+  clickSfx.play();
+  document.querySelectorAll(".panel").forEach(p => p.classList.add("hidden"));
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
   document.getElementById(id).classList.remove("hidden");
   btn.classList.add("active");
 }
 
 function updateProgress() {
-  if(!document.getElementById("agreeCheck").checked) return;
-
+  unlockAudio();
+  const isAgreed = document.getElementById("agreeCheck").checked;
   const val = document.getElementById("savingsInput").value;
-  const percent = Math.min((val/1000)*100,100);
-  document.getElementById("savingsBar").style.width = percent+"%";
+  const bar = document.getElementById("savingsBar");
+  
+  if(!isAgreed) {
+    bar.style.width = "0%";
+    return;
+  }
 
-  localStorage.setItem("savings",val);
-
-  if(percent>=100) upgrade.play();
+  const percent = Math.min((val / 1000) * 100, 100);
+  bar.style.width = percent + "%";
+  
+  localStorage.setItem("savings", val);
+  if(percent >= 100) upgradeSfx.play();
 }
 
 function changeTheme() {
-  const t = document.getElementById("themeSelect").value;
-  t ? document.body.setAttribute("data-theme",t)
-    : document.body.removeAttribute("data-theme");
-  click.play();
+  unlockAudio();
+  clickSfx.play();
+  const theme = document.getElementById("themeSelect").value;
+  theme ? document.body.setAttribute("data-theme", theme) : document.body.removeAttribute("data-theme");
 }
 
-document.getElementById("contractFile").addEventListener("change", e=>{
-  const r = new FileReader();
-  r.onload = ()=>document.getElementById("contractDisplay").innerText = r.result;
-  r.readAsText(e.target.files[0]);
+document.getElementById("contractFile").addEventListener("change", e => {
+  const reader = new FileReader();
+  reader.onload = () => {
+    document.getElementById("contractDisplay").innerText = reader.result;
+    unlockAudio();
+    clickSfx.play();
+  };
+  reader.readAsText(e.target.files[0]);
 });
-</script>
 
+window.onload = () => {
+  const saved = localStorage.getItem("savings");
+  if(saved) document.getElementById("savingsInput").value = saved;
+}
+</script>
 </body>
 </html>
-
