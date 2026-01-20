@@ -1,139 +1,284 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Path to Independence | Antoine</title>
-<style>
-  :root {
-    --bg: #05050a; --card: #0f1020; --text: #e9e9ff; --accent: #7c5cff; --secondary: #22d3ee;
-  }
-  /* Themes */
-  [data-theme="Stealth"] { --bg: #0a0a0a; --card: #1a1a1a; --accent: #555; --secondary: #888; }
-  [data-theme="Crimson"] { --bg: #0f0505; --card: #200f0f; --accent: #ff5c5c; --secondary: #ee2222; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Path to Independence | Hero Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Press+Start+2P&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
 
-  body { margin:0; font-family: sans-serif; background: var(--bg); color: var(--text); transition: 0.3s; }
-  .wrap { max-width: 800px; margin: auto; padding: 20px; }
-  .nav { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
-  .tab-btn { padding: 10px 20px; border: 1px solid var(--accent); background: var(--card); color: #fff; cursor: pointer; border-radius: 8px; }
-  .tab-btn.active { background: var(--accent); box-shadow: 0 0 15px var(--accent); }
-  
-  .panel { background: var(--card); padding: 25px; border-radius: 15px; border: 1px solid #2a2a44; }
-  .stat-row { margin: 15px 0; }
-  .bar-bg { background: #222; height: 12px; border-radius: 6px; overflow: hidden; margin-top: 5px; }
-  .bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--secondary)); width: 0%; transition: 0.5s; }
-  
-  input[type="number"], input[type="file"], select { background: #000; color: #fff; border: 1px solid var(--accent); padding: 8px; border-radius: 5px; width: 100%; margin-top: 5px; }
-  .hidden { display: none; }
-  .btn-action { background: var(--accent); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+<style>
+:root {
+  --bg0: #05050a; --bg1: #0a0a14;
+  --card: rgba(15, 16, 32, 0.85);
+  --text: #e9e9ff; --muted: #a9a9c7;
+  --border: #2a2a44; --accent: #7c5cff;
+  --secondary: #22d3ee; --glow: rgba(124, 92, 255, 0.6);
+  --success: #00ff88; --danger: #ff0055;
+  --font-main: 'Rajdhani', sans-serif;
+  --font-game: 'Orbitron', sans-serif;
+}
+
+/* THEMES FROM PREVIOUS REVISIONS */
+[data-theme="Stealth"] { --bg0: #0a0a0a; --bg1: #111; --accent: #555; --secondary: #888; --glow: rgba(255,255,255,0.1); }
+[data-theme="Crimson"] { --bg0: #0f0505; --bg1: #1a0505; --accent: #ff0055; --secondary: #ff5c5c; --glow: rgba(255, 0, 85, 0.5); }
+
+/* GAMING ENVIRONMENT BACKGROUNDS */
+body {
+  margin: 0; font-family: var(--font-main);
+  background: radial-gradient(circle at 50% 50%, rgba(124, 92, 255, 0.1) 0%, var(--bg0) 80%);
+  background-color: var(--bg0);
+  color: var(--text); min-height: 100vh; overflow-x: hidden;
+  transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pixel-font { font-family: 'Press Start 2P', cursive; font-size: 10px; }
+.cyber-font { font-family: 'Orbitron', sans-serif; }
+
+/* HERO CONTAINER ANIMATIONS */
+.hero-box {
+  height: 220px; background: rgba(0,0,0,0.4); border: 2px solid var(--border);
+  border-radius: 20px; position: relative; overflow: hidden;
+  margin-bottom: 25px; display: flex; align-items: center; justify-content: center;
+  box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+}
+
+.hero-sprite {
+  font-size: 80px; transition: 0.5s ease; filter: drop-shadow(0 0 10px var(--glow));
+  animation: idle-bob 3s infinite ease-in-out;
+}
+
+@keyframes idle-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+.equipment-grid {
+  position: absolute; bottom: 10px; left: 10px; right: 10px;
+  display: flex; gap: 10px; justify-content: center;
+}
+.eq-slot {
+  width: 45px; height: 45px; border: 1px solid var(--border);
+  background: rgba(255,255,255,0.05); border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; font-size: 20px;
+  filter: grayscale(1); opacity: 0.3; transition: 0.3s;
+}
+.eq-slot.active { filter: grayscale(0); opacity: 1; border-color: var(--secondary); box-shadow: 0 0 10px var(--secondary); }
+
+/* INTERFACE COMPONENTS */
+.wrap { max-width: 800px; margin: auto; padding: 20px; }
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 15px; background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; backdrop-filter: blur(15px); margin-bottom: 20px;
+}
+.logo-box {
+  width: 45px; height: 45px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--secondary));
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; color: #000; box-shadow: 0 0 20px var(--glow);
+}
+
+.tab-btn {
+  padding: 12px; background: var(--card); border: 1px solid var(--border);
+  color: var(--text); cursor: pointer; border-radius: 12px; flex: 1;
+  text-transform: uppercase; letter-spacing: 2px; transition: 0.2s;
+}
+.tab-btn.active {
+  background: var(--accent); border-color: var(--secondary);
+  box-shadow: 0 0 20px var(--glow); transform: scale(1.05);
+}
+
+.panel {
+  background: var(--card); border-radius: 24px; padding: 25px;
+  border: 1px solid var(--border); backdrop-filter: blur(20px);
+  animation: slide-up 0.4s ease-out;
+}
+@keyframes slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.milestone-card {
+  padding: 15px; border-radius: 15px; background: rgba(0,0,0,0.2);
+  margin-bottom: 15px; border: 1px solid transparent; transition: 0.3s;
+}
+.milestone-card.active { border-color: var(--secondary); background: rgba(34, 211, 238, 0.05); }
+
+.bar-bg { background: rgba(0,0,0,0.5); height: 14px; border-radius: 7px; overflow: hidden; margin: 10px 0; border: 1px solid var(--border); }
+.bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--secondary)); transition: 1s ease-out; }
+
+input, select {
+  width: 100%; padding: 12px; background: rgba(0,0,0,0.6); color: #fff;
+  border: 1px solid var(--border); border-radius: 10px; font-family: var(--font-main);
+}
 </style>
 </head>
-<body data-theme="Neon Cyber">
 
+<body>
 <div class="wrap">
-  <div style="text-align:center; margin-bottom:20px;">
-    <h1>PATH TO INDEPENDENCE</h1>
-    <button id="startAudio" class="btn-action" style="width:auto; padding: 5px 15px;">Enable Audio System</button>
-  </div>
+  <header>
+    <div style="display:flex; align-items:center; gap:15px;">
+      <div class="logo-box cyber-font">PI</div>
+      <div>
+        <h2 class="cyber-font" style="margin:0; font-size:16px;">INDEPENDENCE COMMAND</h2>
+        <div class="pixel-font" id="heroLevel" style="color:var(--secondary);">LEVEL 1: PEASANT</div>
+      </div>
+    </div>
+    <div class="cyber-font" id="globalXP" style="color:var(--accent); font-size:20px;">0%</div>
+  </header>
 
-  <div class="nav">
-    <button class="tab-btn active" onclick="showTab('progress')">Progress</button>
-    <button class="tab-btn" onclick="showTab('contract')">Contract</button>
-    <button class="tab-btn" onclick="showTab('settings')">Settings</button>
-  </div>
+  <nav class="nav" style="display:flex; gap:10px; margin-bottom:20px;">
+    <button class="tab-btn active cyber-font" onclick="showTab('progress',this)">Quest</button>
+    <button class="tab-btn cyber-font" onclick="showTab('contract',this)">Rules</button>
+    <button class="tab-btn cyber-font" onclick="showTab('settings',this)">Config</button>
+  </nav>
 
   <div id="progress" class="panel">
-    <h3>Mission Tracker</h3>
-    <div class="stat-row">
-        <label>Savings Goal ($1,000)</label>
-        <input type="number" id="saveInput" value="0" oninput="updateStats()">
-        <div class="bar-bg"><div id="saveBar" class="bar-fill"></div></div>
+    
+    <div class="hero-box" id="environment">
+      <div class="hero-sprite" id="heroIcon">👤</div>
+      <div class="equipment-grid">
+        <div class="eq-slot" id="slotArmor" title="Armor: Stability">🛡️</div>
+        <div class="eq-slot" id="slotWeapon" title="Weapon: Discipline">🗡️</div>
+        <div class="eq-slot" id="slotMagic" title="Magic: Independence">✨</div>
+      </div>
     </div>
-    <div class="stat-row">
-        <label>Weekly Debt/Bills</label>
-        <input type="number" id="debtInput" value="0" oninput="updateStats()">
-        <div class="bar-bg"><div id="debtBar" class="bar-fill" style="background: #e74c3c"></div></div>
+
+    <div class="milestone-card active">
+      <div class="pixel-font" style="color:var(--secondary); margin-bottom:10px;">Quest 1: Stability Phase</div>
+      <label style="display:block; margin:8px 0;"><input type="checkbox" class="m1-check" onchange="updateSystem()"> Positive Balance (+XP)</label>
+      <label style="display:block; margin:8px 0;"><input type="checkbox" class="m1-check" onchange="updateSystem()"> Rent Paid (+XP)</label>
+      <label style="display:block; margin:8px 0;"><input type="checkbox" class="m1-check" onchange="updateSystem()"> Wed. Meeting (+XP)</label>
     </div>
+
+    <div id="m2_box" class="milestone-card" style="opacity:0.3;">
+      <div class="pixel-font" style="color:var(--accent); margin-bottom:10px;">Quest 2: The $1,000 Vault</div>
+      <input type="number" id="savingsInput" placeholder="Deposit Savings..." oninput="updateSystem()">
+      <div class="bar-bg"><div id="saveBar" class="bar-fill"></div></div>
+      <p style="font-size:10px; color:var(--danger); text-transform:uppercase;">Warning: Digital spending cancels buffs.</p>
+    </div>
+
   </div>
 
   <div id="contract" class="panel hidden">
-    <h3>Contract Control</h3>
+    <h3 class="cyber-font">The Sacred Vow</h3>
     <input type="file" id="contractFile" accept=".txt">
-    <div id="contractDisplay" style="background:#000; padding:10px; height:150px; overflow-y:auto; margin-top:10px; font-size:12px; border:1px solid #333;">
-        Upload contract text file to review terms...
-    </div>
-    <label style="display:block; margin-top:15px;">
-        <input type="checkbox" id="agreeCheck" onclick="playEffect('click')"> I agree to these terms as a legally binding household agreement.
+    <div id="contractDisplay" style="background:rgba(0,0,0,0.4); padding:15px; height:150px; overflow-y:auto; border:1px solid var(--border); margin-top:10px; font-family:monospace; font-size:12px;"></div>
+    <label style="margin-top:20px; display:flex; align-items:center; gap:10px; cursor:pointer;">
+      <input type="checkbox" id="agreeCheck" onchange="updateSystem()"> <span class="pixel-font">I ACCEPT THE TERMS</span>
     </label>
   </div>
 
   <div id="settings" class="panel hidden">
-    <h3>System Settings</h3>
-    <label>Theme</label>
-    <select id="themeSelect" onchange="changeTheme()">
-        <option>Neon Cyber</option>
-        <option>Stealth</option>
-        <option>Crimson</option>
-    </select>
-    <label style="display:block; margin-top:15px;">
-        <input type="checkbox" id="musicToggle" onclick="toggleMusic()"> Lo-fi Background Music
-    </label>
+    <h3 class="cyber-font">System Config</h3>
+    <div style="margin-bottom:20px;">
+      <label>Visual Realm</label>
+      <select id="themeSelect" onchange="changeTheme()">
+        <option value="">Cyber City (Default)</option>
+        <option value="Stealth">Shadow Realm</option>
+        <option value="Crimson">Blood Moon</option>
+      </select>
+    </div>
+    <div style="margin-bottom:20px;">
+        <label>BGM Station</label>
+        <select id="musicSelect" onchange="changeMusic()">
+          <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3">Electronic (Default)</option>
+          <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">Lofi / Jazz</option>
+          <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3">Hiphop Beats</option>
+        </select>
+      </div>
+    <div style="margin-bottom:20px;">
+      <label>Interface Font</label>
+      <select id="fontSelect" onchange="changeFont()">
+        <option value="var(--font-main)">Modern Combat</option>
+        <option value="'Orbitron', sans-serif">Neon Cyber</option>
+        <option value="'Press Start 2P', cursive">Retro Pixel</option>
+      </select>
+    </div>
   </div>
 </div>
 
 <script>
-  // Audio Assets
-  const bgm = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3'); // Lo-fi placeholder
+let bgm = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3");
+bgm.loop = true;
+const clickSfx = new Audio("https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3");
+const levelUpSfx = new Audio("https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3");
+
+let audioUnlocked = false;
+
+function unlockAudio() {
+  if (audioUnlocked) return;
+  bgm.volume = 0.3;
+  bgm.play().catch(() => {});
+  audioUnlocked = true;
+}
+
+function showTab(id, btn) {
+  unlockAudio(); clickSfx.play();
+  document.querySelectorAll(".panel").forEach(p => p.classList.add("hidden"));
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById(id).classList.remove("hidden");
+  btn.classList.add("active");
+}
+
+function updateSystem() {
+  unlockAudio();
+  const agreed = document.getElementById('agreeCheck').checked;
+  const m1Done = Array.from(document.querySelectorAll('.m1-check')).every(c => c.checked);
+  const savings = document.getElementById('savingsInput').value || 0;
+  const savePercent = Math.min((savings / 1000) * 100, 100);
+
+  // LEVELING LOGIC
+  let level = "LEVEL 1: PEASANT";
+  let icon = "👤";
+  
+  // Equip Armor
+  if(m1Done && agreed) {
+    document.getElementById('slotArmor').classList.add('active');
+    document.getElementById('m2_box').style.opacity = "1";
+    level = "LEVEL 2: SQUIRE";
+    icon = "🛡️";
+  }
+
+  // Equip Weapon
+  if(savings >= 500) {
+    document.getElementById('slotWeapon').classList.add('active');
+    level = "LEVEL 3: KNIGHT";
+    icon = "⚔️";
+  }
+
+  // Equip Magic
+  if(savePercent >= 100) {
+    document.getElementById('slotMagic').classList.add('active');
+    level = "LEVEL 4: HERO";
+    icon = "🧙‍♂️";
+    if(savings == 1000) levelUpSfx.play();
+  }
+
+  document.getElementById('heroLevel').innerText = level;
+  document.getElementById('heroIcon').innerText = icon;
+  document.getElementById('saveBar').style.width = savePercent + '%';
+  document.getElementById('globalXP').innerText = Math.round(savePercent) + '%';
+}
+
+function changeMusic() {
+  unlockAudio();
+  bgm.pause();
+  bgm = new Audio(document.getElementById('musicSelect').value);
   bgm.loop = true;
-  const sfx = {
-    click: new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3'),
-    upgrade: new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3')
-  };
+  bgm.volume = 0.3;
+  bgm.play();
+}
 
-  document.getElementById('startAudio').onclick = () => {
-    bgm.play(); bgm.pause(); // Initialize
-    document.getElementById('startAudio').innerText = "System Online";
-  };
+function changeFont() {
+  document.body.style.fontFamily = document.getElementById('fontSelect').value;
+}
 
-  function showTab(id) {
-    playEffect('click');
-    document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(id).classList.remove('hidden');
-    event.target.classList.add('active');
-  }
+function changeTheme() {
+  unlockAudio(); clickSfx.play();
+  const t = document.getElementById("themeSelect").value;
+  t ? document.body.setAttribute("data-theme", t) : document.body.removeAttribute("data-theme");
+}
 
-  function updateStats() {
-    const savings = document.getElementById('saveInput').value;
-    const savePercent = Math.min((savings / 1000) * 100, 100);
-    document.getElementById('saveBar').style.width = savePercent + '%';
-    if(savePercent >= 100) playEffect('upgrade');
-    localStorage.setItem('savings', savings);
-  }
-
-  function changeTheme() {
-    const theme = document.getElementById('themeSelect').value;
-    document.body.setAttribute('data-theme', theme);
-    playEffect('click');
-  }
-
-  function toggleMusic() {
-    const musicOn = document.getElementById('musicToggle').checked;
-    musicOn ? bgm.play() : bgm.pause();
-  }
-
-  function playEffect(type) {
-    sfx[type].currentTime = 0;
-    sfx[type].play();
-  }
-
-  // File Reader for Contract
-  document.getElementById('contractFile').addEventListener('change', function(e) {
-    const reader = new FileReader();
-    reader.onload = function() {
-      document.getElementById('contractDisplay').innerText = reader.result;
-    };
-    reader.readAsText(e.target.files[0]);
-  });
+document.getElementById("contractFile").addEventListener("change", e => {
+  const reader = new FileReader();
+  reader.onload = () => { document.getElementById("contractDisplay").innerText = reader.result; };
+  reader.readAsText(e.target.files[0]);
+});
 </script>
 </body>
 </html>
