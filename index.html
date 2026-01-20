@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Path to Independence | MASTER CORE v9</title>
+    <title>Path to Independence | MASTER CORE v10</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -15,7 +15,7 @@
 
         body, html { margin: 0; padding: 0; height: 100vh; width: 100vw; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'Rajdhani', sans-serif; }
         
-        /* --- FULL INTRO SYSTEM --- */
+        /* --- INTRO SYSTEM --- */
         #introOverlay { 
             position: fixed; inset: 0; background: var(--bg); z-index: 5000; 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
@@ -37,19 +37,29 @@
         .char-card.selected { border-color: var(--secondary); box-shadow: 0 0 15px var(--secondary); background: #0a0a20; }
         .char-card span { font-size: 40px; display: block; margin-bottom: 5px; }
 
-        /* --- ARENA DESIGN --- */
+        /* --- ARENA & EPIC ANIMATIONS --- */
         .arena { 
             height: 42vh; background: radial-gradient(circle, #1a1a3a 0%, #000 100%); 
             display: flex; align-items: center; justify-content: center; position: relative; 
-            border-bottom: 2px solid var(--accent); transition: background 0.3s;
+            border-bottom: 2px solid var(--accent); transition: 0.3s;
         }
+        
+        /* THE EPIC FLASH */
+        .victory-flash {
+            animation: epicGreen 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+        }
+        @keyframes epicGreen {
+            0% { background: rgba(0, 255, 153, 0); filter: brightness(1); }
+            20% { background: rgba(0, 255, 153, 0.5); filter: brightness(1.8); }
+            100% { background: rgba(0, 255, 153, 0); filter: brightness(1); }
+        }
+
         .jail-bars { 
             position: absolute; inset: 0; z-index: 10; 
             background: repeating-linear-gradient(90deg, transparent, transparent 18%, #111 18%, #222 21%); 
             transition: 1.5s; pointer-events: none; opacity: 1;
         }
         
-        /* SIDE EQUIPMENT SLOTS */
         .side-slots { display: flex; flex-direction: column; gap: 12px; position: absolute; z-index: 20; top: 50%; transform: translateY(-50%); }
         .left-slots { left: 15px; }
         .right-slots { right: 15px; }
@@ -62,10 +72,26 @@
         .slot.equipped { border-color: var(--accent); box-shadow: 0 0 12px var(--accent); background: #0d1a14; }
         .slot-name { font-family: var(--font-pix); font-size: 5px; margin-top: 5px; color: #666; }
 
-        /* --- DYNAMIC HERO & DAMAGE --- */
+        /* --- HERO & COMBAT TEXT --- */
         .hero-container { position: relative; width: 120px; height: 120px; z-index: 5; transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .main-sprite { font-size: 70px; filter: drop-shadow(0 0 15px var(--accent)); text-align: center; transition: 0.5s; position: relative; }
         
+        .hero-bounce { animation: celebration 0.5s ease; }
+        @keyframes celebration {
+            0%, 100% { transform: scale(1); }
+            50% { transform: translateY(-35px) scale(1.25); }
+        }
+
+        .floating-xp {
+            position: absolute; color: var(--accent); font-family: var(--font-pix); font-size: 11px;
+            pointer-events: none; animation: floatUp 1.2s ease-out forwards; z-index: 100;
+            text-shadow: 0 0 10px var(--accent);
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-120px); opacity: 0; }
+        }
+
         .damage-fx { 
             position: absolute; inset: 0; font-size: 70px; color: rgba(255,0,0,0.5); 
             mix-blend-mode: overlay; pointer-events: none; display: none; 
@@ -81,7 +107,7 @@
         #heroAura { position: absolute; inset: -15px; border: 3px solid var(--secondary); border-radius: 50%; opacity: 0; }
         .aura-active { animation: auraPulse 2s infinite !important; opacity: 1 !important; }
 
-        /* --- LOWERED HUD & HEALTH --- */
+        /* --- HUD --- */
         .hero-hud {
             position: absolute; bottom: 15px; left: 20px; z-index: 40;
             background: rgba(0,0,0,0.7); padding: 12px; border-left: 4px solid var(--accent);
@@ -90,7 +116,7 @@
         .health-bar-container { width: 140px; height: 10px; background: #111; margin-top: 8px; border: 1px solid #333; border-radius: 2px; overflow: hidden; }
         #healthFill { width: 100%; height: 100%; background: linear-gradient(90deg, #ff0000, #ff5555); transition: 0.5s; }
 
-        /* --- DASHBOARD SYSTEM --- */
+        /* --- DASHBOARD --- */
         .dashboard { height: 58vh; padding: 12px; display: flex; flex-direction: column; background: var(--bg); }
         .nav-tabs { display: flex; gap: 5px; margin-bottom: 10px; flex-shrink: 0; }
         .tab-btn { 
@@ -107,16 +133,16 @@
         .locked { opacity: 0.15; pointer-events: none; filter: grayscale(1); }
         
         .task-row { display: flex; align-items: center; gap: 12px; font-size: 15px; padding: 10px 0; border-bottom: 1px solid #111; }
-        .task-row input { width: 20px; height: 20px; accent-color: var(--accent); }
+        .task-row input { width: 22px; height: 22px; accent-color: var(--accent); cursor: pointer; }
 
         #contractDisplay { font-size: 13px; line-height: 1.6; white-space: pre-wrap; color: #888; padding: 20px; background: #000; border: 1px solid #111; scroll-behavior: smooth; }
         .vow-highlight { background: rgba(0, 255, 153, 0.15); color: var(--accent); border-left: 3px solid var(--accent); padding-left: 10px; display: block; width: 100%; }
 
-        /* --- FOOTER & ANIMATIONS --- */
         .footer-stats { padding-top: 10px; border-top: 1px solid #222; flex-shrink: 0; }
         .bar-container { height: 12px; background: #000; border-radius: 6px; border: 1px solid #333; overflow: hidden; margin-top: 5px; }
         .bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--secondary)); transition: 1s; }
 
+        /* --- GLOBAL FX --- */
         @keyframes auraPulse { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.5); opacity: 0; } }
         @keyframes shake { 0%, 100% { transform: translate(0,0); } 25% { transform: translate(-2px, 2px); } 50% { transform: translate(2px, -2px); } 75% { transform: translate(-2px, -2px); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -285,9 +311,33 @@
         updateHP(0);
     }
 
+    // --- INTEGRATED EPIC REWARD LOGIC ---
     function syncProgress(el) {
-        if(!el.checked) updateHP(-20);
-        else updateHP(10);
+        if(el.checked) {
+            // 1. Play Reward Sound
+            const sfx = new Audio('reward.mp3');
+            sfx.volume = 0.7;
+            sfx.play();
+
+            // 2. Trigger Visual Epic Effects
+            const arena = document.getElementById('arenaMain');
+            const hero = document.getElementById('heroScale');
+            
+            arena.classList.add('victory-flash');
+            hero.classList.add('hero-bounce');
+            
+            setTimeout(() => {
+                arena.classList.remove('victory-flash');
+                hero.classList.remove('hero-bounce');
+            }, 600);
+
+            // 3. Create Floating XP Text
+            spawnFloatingXP(el);
+
+            updateHP(10);
+        } else {
+            updateHP(-20);
+        }
 
         const all = document.querySelectorAll('#tabQuests input[type="checkbox"]');
         const checked = Array.from(all).filter(i => i.checked).length;
@@ -297,6 +347,20 @@
         document.getElementById('xpText').innerText = p + "%";
 
         checkMilestones();
+    }
+
+    function spawnFloatingXP(el) {
+        const rect = el.getBoundingClientRect();
+        const float = document.createElement('div');
+        float.className = 'floating-xp';
+        float.style.left = (rect.left + window.scrollX) + 'px';
+        float.style.top = (rect.top + window.scrollY) + 'px';
+        
+        const rewards = ["+50 XP", "STABILITY UP", "VOW HONORED", "DOMINANCE+"];
+        float.innerText = rewards[Math.floor(Math.random() * rewards.length)] + " ✨";
+        
+        document.body.appendChild(float);
+        setTimeout(() => float.remove(), 1200);
     }
 
     function updateHP(amt) {
@@ -312,7 +376,6 @@
             }, 500);
         }
 
-        // Visual Damage Scaling
         const b = 0.4 + (hp/160);
         const g = 1 - (hp/100);
         document.getElementById('mainSprite').style.filter = `brightness(${b}) grayscale(${g})`;
@@ -338,7 +401,6 @@
             document.getElementById('hudRank').innerText = "ACT 2: FREEDMAN";
             document.getElementById('hudRank').style.color = "var(--accent)";
         }
-        // Character Growth Logic
         document.getElementById('heroScale').style.transform = `scale(${1 + (lvl*0.15)})`;
     }
 
