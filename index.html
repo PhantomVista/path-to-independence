@@ -2,195 +2,247 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Independence Hero | RPG</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@700&display=swap" rel="stylesheet">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Path to Independence | RPG</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@700&family=Orbitron:wght@400;900&family=Courier+Prime&display=swap" rel="stylesheet">
 <style>
 :root {
-  --accent: #7c5cff; --secondary: #22d3ee; --glow: rgba(124, 92, 255, 0.8);
-  --panel-bg: rgba(13, 13, 33, 0.98);
+    --accent: #7c5cff; --secondary: #22d3ee; --danger: #ff0055;
+    --panel: rgba(13, 13, 33, 0.98); --font-main: 'Rajdhani', sans-serif;
 }
 
-body, html { 
-  margin: 0; padding: 0; height: 100vh; width: 100vw; 
-  background: #000; color: #fff; font-family: 'Rajdhani', sans-serif; overflow: hidden;
-}
+/* THEME VARIANTS */
+body.theme-blood { --accent: #ff0055; --secondary: #ffaa00; background: #1a0505; }
+body.theme-neon { --accent: #00ff99; --secondary: #22d3ee; background: #050a0a; }
+body.theme-stealth { --accent: #555; --secondary: #888; background: #0a0a0a; }
 
-/* HERO ARENA */
-.arena {
-  height: 40vh; position: relative; border-bottom: 3px solid var(--accent);
-  background: radial-gradient(circle, #1a1a3a 0%, #000 100%);
-  display: flex; align-items: center; justify-content: center;
-}
+body, html { margin: 0; padding: 0; height: 100vh; width: 100vw; overflow: hidden; background: #000; color: #fff; font-family: var(--font-main); transition: 0.5s; }
 
-.jail-bars {
-  position: absolute; inset: 0; z-index: 10;
-  background: repeating-linear-gradient(90deg, transparent, transparent 18%, #111 18%, #222 22%);
-  transition: 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
+/* INTRO SYSTEM */
+#introOverlay { position: fixed; inset: 0; background: #05050a; z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+.char-grid { display: flex; gap: 15px; margin: 20px 0; flex-wrap: wrap; justify-content: center; }
+.char-card { border: 2px solid #333; padding: 10px; cursor: pointer; transition: 0.3s; background: #111; width: 80px; }
+.char-card.selected { border-color: var(--secondary); box-shadow: 0 0 15px var(--secondary); transform: scale(1.1); }
+.pixel-art { font-size: 50px; image-rendering: pixelated; margin-bottom: 5px; }
 
-.hero-large {
-  font-size: 140px; z-index: 5; cursor: pointer;
-  filter: drop-shadow(0 0 20px var(--glow));
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
+/* GAME WORLD */
+#gameWorld { display: flex; flex-direction: column; height: 100vh; }
+.arena { flex: 0 0 45%; position: relative; background: radial-gradient(circle, #1a1a3a 0%, #000 100%); display: flex; align-items: center; justify-content: center; border-bottom: 3px solid var(--accent); }
+.jail-bars { position: absolute; inset: 0; z-index: 10; background: repeating-linear-gradient(90deg, transparent, transparent 15%, #111 15%, #222 18%); transition: 1.5s; opacity: 1; }
 
-/* SPECIAL MOVE: MANA BURST */
-.mana-burst {
-  position: absolute; width: 100px; height: 100px;
-  background: var(--secondary); border-radius: 50%;
-  box-shadow: 0 0 50px var(--secondary);
-  opacity: 0; pointer-events: none; z-index: 6;
-}
+.hero-container { position: relative; z-index: 5; transition: 0.2s; cursor: pointer; text-align: center; }
+.hero-sprite { font-size: 100px; filter: drop-shadow(0 0 10px var(--accent)); transition: 0.3s; }
+.equip-layer { position: absolute; top: 0; left: 0; width: 100%; font-size: 100px; opacity: 0; transition: 0.5s; pointer-events: none; }
+.equip-layer.on { opacity: 1; }
 
-@keyframes cast-spell {
-  0% { transform: scale(0); opacity: 1; }
-  100% { transform: scale(4); opacity: 0; }
-}
+/* UI DASHBOARD */
+.dashboard { flex: 1; display: flex; flex-direction: column; padding: 12px; background: #05050a; }
+.tabs { display: flex; gap: 5px; margin-bottom: 10px; }
+.tab-btn { flex: 1; padding: 12px; background: #111; border: 1px solid #333; color: #666; font-family: 'Press Start 2P'; font-size: 8px; cursor: pointer; }
+.tab-btn.active { border-color: var(--accent); color: #fff; background: var(--accent); }
 
-/* UI CONTAINER */
-.dashboard {
-  height: 60vh; padding: 20px; display: flex; flex-direction: column; gap: 15px;
-  background: linear-gradient(to top, #05050a, #0d0d21);
-}
+.content { flex: 1; background: var(--panel); border: 1px solid #333; border-radius: 10px; padding: 15px; position: relative; overflow: hidden; }
 
-.tabs { display: flex; gap: 8px; }
-.tab-btn {
-  flex: 1; padding: 15px; background: #111; border: 2px solid #333;
-  color: #666; font-family: 'Press Start 2P'; font-size: 9px; cursor: pointer;
-}
-.tab-btn.active { border-color: var(--accent); color: #fff; box-shadow: 0 0 10px var(--accent); }
+/* QUESTS */
+.quest-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #222; }
+.unlock-strip { display: flex; justify-content: space-around; margin: 15px 0; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; }
+.slot { font-family: 'Press Start 2P'; font-size: 8px; color: #444; text-align: center; transition: 0.5s; }
+.slot.active { color: var(--secondary); text-shadow: 0 0 5px var(--secondary); }
 
-.content-box {
-  flex: 1; background: var(--panel-bg); border: 1px solid #333;
-  border-radius: 12px; padding: 20px; position: relative;
-}
+.progress-fixed { position: absolute; bottom: 15px; left: 15px; right: 15px; }
+.bar-bg { background: #000; height: 20px; border-radius: 10px; border: 1px solid #444; overflow: hidden; }
+.bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--secondary)); transition: 1s; }
 
-.quest-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 0; border-bottom: 1px solid #222;
-}
-
-/* PROGRESS BAR */
-.progress-container { margin-top: 15px; }
-.bar-outer { height: 24px; background: #000; border: 1px solid #444; border-radius: 12px; overflow: hidden; margin: 10px 0; }
-.bar-inner { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--secondary)); transition: 1s ease; }
+/* CONFIG ELEMENTS */
+.config-group { margin-bottom: 15px; }
+.config-group label { display: block; font-size: 11px; margin-bottom: 5px; color: var(--secondary); }
+select { width: 100%; padding: 10px; background: #000; border: 1px solid #444; color: #fff; }
 
 .hidden { display: none !important; }
 </style>
 </head>
-<body>
+<body class="theme-neon">
 
-<div class="arena" id="arena">
-  <div id="jail" class="jail-bars"></div>
-  <div id="burst" class="mana-burst"></div>
-  <div id="hero" class="hero-large" onclick="heroTap()">👤</div>
-  
-  <div style="position:absolute; top:15px; left:20px; font-family:'Press Start 2P'; font-size:10px;">
-    <div id="lvlText" style="color:var(--secondary)">LVL 1: PRISONER</div>
-    <div id="xpText" style="color:var(--accent); margin-top:10px;">XP: 0%</div>
-  </div>
+<div id="introOverlay">
+    <div id="setup">
+        <h2 style="font-family:'Press Start 2P'; font-size:12px;">SIGN THE CONTRACT</h2>
+        <input type="text" id="nameIn" placeholder="HERO NAME..." style="padding:10px; text-align:center; width:200px; margin-bottom:10px;">
+        <div class="char-grid">
+            <div class="char-card" onclick="pick('🛡️','KNIGHT')"><div class="pixel-art">🛡️</div><p style="font-size:8px;">KNIGHT</p></div>
+            <div class="char-card" onclick="selectChar('🥷','ROGUE')"><div class="pixel-art">🥷</div><p style="font-size:8px;">ROGUE</p></div>
+            <div class="char-card" onclick="selectChar('🧙‍♂️','MAGE')"><div class="pixel-art">🧙‍♂️</div><p style="font-size:8px;">MAGE</p></div>
+        </div>
+        <input type="file" id="fileIn" onchange="document.getElementById('signBtn').classList.remove('hidden')">
+        <button id="signBtn" class="tab-btn hidden" onclick="generateStory()" style="margin-top:20px; width:220px;">SIGN & REWRITE FATE</button>
+    </div>
+    <div id="story" class="hidden">
+        <div id="storyBox" style="font-family:'Press Start 2P'; font-size:10px; line-height:1.6; color:var(--secondary); padding:20px;"></div>
+        <button class="tab-btn" onclick="enterGame()" style="width:220px;">DESCEND INTO JAIL</button>
+    </div>
 </div>
 
-<div class="dashboard">
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('quests', this)">QUESTS</button>
-    <button class="tab-btn" onclick="switchTab('vault', this)">VAULT</button>
-    <button class="tab-btn" onclick="switchTab('settings', this)">CONFIG</button>
-  </div>
-
-  <div class="content-box">
-    <div id="quests" class="panel">
-      <div class="quest-row">
-        <span><b style="color:var(--secondary)">[STABILITY]</b> Rent Paid ($250)</span>
-        <input type="checkbox" class="task-check" onchange="calcProgress()">
-      </div>
-      <div class="quest-row">
-        <span><b style="color:var(--secondary)">[VOW]</b> Wednesday Meeting</span>
-        <input type="checkbox" class="task-check" onchange="calcProgress()">
-      </div>
-      <div class="quest-row">
-        <span><b style="color:var(--secondary)">[STRENGTH]</b> Account Positive</span>
-        <input type="checkbox" class="task-check" onchange="calcProgress()">
-      </div>
-      <p style="font-size:12px; color:#666; margin-top:15px;">*Complete all stability quests to break the jail bars.</p>
+<div id="gameWorld">
+    <div class="arena">
+        <div id="jail" class="jail-bars"></div>
+        <div class="hero-container" onclick="heroTap()">
+            <div id="sprite" class="hero-sprite">👤</div>
+            <div id="armorArt" class="equip-layer">🥋</div>
+            <div id="weaponArt" class="equip-layer">⚔️</div>
+            <div id="magicArt" class="equip-layer">⚡</div>
+        </div>
+        <div style="position:absolute; top:15px; left:15px;">
+            <div id="nameOut" style="font-family:'Press Start 2P'; font-size:10px;">HERO</div>
+            <div id="lvlOut" style="color:var(--danger); font-size:12px; margin-top:5px;">LVL 1: PRISONER</div>
+        </div>
     </div>
 
-    <div id="vault" class="panel hidden">
-      <div class="progress-container">
-        <label style="font-family:'Press Start 2P'; font-size:10px;">VAULT DEPOSIT ($1,000 GOAL)</label>
-        <div class="bar-outer"><div id="mainBar" class="bar-inner"></div></div>
-        <input type="number" id="cashInput" placeholder="Enter Deposit Amount..." 
-               style="width:100%; padding:15px; background:#000; border:1px solid #444; color:#fff; font-size:20px; text-align:center;">
-        <button onclick="triggerSpecialMove()" 
-                style="width:100%; margin-top:10px; padding:15px; background:var(--accent); color:#fff; border:none; font-family:'Press Start 2P'; cursor:pointer;">
-          CAST SAVINGS SPELL
-        </button>
-      </div>
-    </div>
+    <div class="dashboard">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="tab('q',this)">QUESTS</button>
+            <button class="tab-btn" onclick="tab('r',this)">RULES</button>
+            <button class="tab-btn" onclick="tab('c',this)">CONFIG</button>
+        </div>
 
-    <div id="settings" class="panel hidden">
-      <p>Music Station: Lo-Fi Hiphop</p>
-      <input type="range" min="0" max="1" step="0.1" value="0.5" style="width:100%;">
-      <button onclick="location.reload()" style="margin-top:20px; color:var(--danger);">RESET JOURNEY</button>
+        <div class="content">
+            <div id="q" class="panel">
+                <div class="quest-item"><span>Positive Balance</span><input type="checkbox" class="t" onchange="sync()"></div>
+                <div class="quest-item"><span>Rent Paid ($250)</span><input type="checkbox" class="t" onchange="sync()"></div>
+                <div class="quest-item"><span>Wednesday Meeting</span><input type="checkbox" class="t" onchange="sync()"></div>
+                
+                <div class="unlock-strip">
+                    <div class="slot" id="sA">ARMOR<br>OFF</div>
+                    <div class="slot" id="sW">WEAPON<br>OFF</div>
+                    <div class="slot" id="sM">MAGIC<br>OFF</div>
+                </div>
+
+                <div class="progress-fixed">
+                    <div style="display:flex; justify-content:space-between; font-size:10px; margin-bottom:5px;">
+                        <span>JAILBREAK PROGRESS</span><span id="xp%">0%</span>
+                    </div>
+                    <div class="bar-bg"><div id="bar" class="bar-fill"></div></div>
+                </div>
+            </div>
+
+            <div id="r" class="panel hidden">
+                <div id="vowText" style="font-size:12px; color:#888; height:200px; overflow-y:auto;"></div>
+            </div>
+
+            <div id="c" class="panel hidden">
+                <div class="config-group">
+                    <label>VISUAL REALM (THEME)</label>
+                    <select onchange="document.body.className = 'theme-' + this.value">
+                        <option value="neon">NEON CYBER</option>
+                        <option value="blood">BLOOD MOON</option>
+                        <option value="stealth">STEALTH OPS</option>
+                    </select>
+                </div>
+                <div class="config-group">
+                    <label>INTERFACE FONT</label>
+                    <select onchange="document.body.style.setProperty('--font-main', this.value)">
+                        <option value="'Rajdhani', sans-serif">MODERN TECH</option>
+                        <option value="'Press Start 2P', cursive">RETRO PIXEL</option>
+                        <option value="'Courier Prime', monospace">TYPED CONTRACT</option>
+                        <option value="'Orbitron', sans-serif">CYBERPUNK</option>
+                    </select>
+                </div>
+                <div class="config-group">
+                    <label>BGM STATION</label>
+                    <select id="bgm" onchange="playBGM()">
+                        <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3">CYBER TRAP</option>
+                        <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">LOFI CHILL</option>
+                        <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3">OLD SCHOOL</option>
+                    </select>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 <script>
-const hero = document.getElementById('hero');
-const burst = document.getElementById('burst');
+let audio = new Audio();
+let contract = "";
 
-// TABS SYSTEM
-function switchTab(id, btn) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(id).classList.remove('hidden');
-  btn.classList.add('active');
+function selectChar(icon, cls) {
+    document.getElementById('sprite').innerText = icon;
+    document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
+    event.currentTarget.classList.add('selected');
 }
 
-// INTERACTIVE HERO
+function generateStory() {
+    const file = document.getElementById('fileIn').files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        contract = e.target.result;
+        const name = document.getElementById('nameIn').value || "Antoine";
+        document.getElementById('nameOut').innerText = name.toUpperCase();
+        document.getElementById('setup').classList.add('hidden');
+        document.getElementById('story').classList.remove('hidden');
+        document.getElementById('storyBox').innerText = `${name}, your life was once bound by the terms: "${contract.substring(0,80)}..." Today, you enter the dungeon to rewrite that contract with gold and discipline.`;
+        document.getElementById('vowText').innerText = contract;
+    };
+    reader.readAsText(file);
+}
+
+function enterGame() {
+    document.getElementById('introOverlay').style.display = 'none';
+    playBGM();
+}
+
+function playBGM() {
+    audio.pause();
+    audio = new Audio(document.getElementById('bgm').value);
+    audio.loop = true;
+    audio.play();
+}
+
+function tab(id, btn) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.remove('hidden');
+    btn.classList.add('active');
+}
+
 function heroTap() {
-  hero.style.transform = "scale(1.3) rotate(5deg)";
-  setTimeout(() => hero.style.transform = "scale(1)", 200);
+    const s = document.getElementById('sprite');
+    s.style.transform = "scale(1.4) translateY(-10px)";
+    setTimeout(() => s.style.transform = "scale(1)", 200);
 }
 
-// SPECIAL MOVE LOGIC
-function triggerSpecialMove() {
-  const amount = document.getElementById('cashInput').value || 0;
-  if(amount <= 0) return;
+function sync() {
+    const t = document.querySelectorAll('.t');
+    const done = Array.from(t).filter(x => x.checked).length;
+    const p = Math.round((done / t.length) * 100);
+    
+    document.getElementById('bar').style.width = p + "%";
+    document.getElementById('xp%').innerText = p + "%";
 
-  // Visual Effect
-  burst.style.animation = 'none';
-  void burst.offsetWidth; // Trigger reflow
-  burst.style.animation = 'cast-spell 0.6s ease-out forwards';
-  
-  hero.style.transform = "scale(1.5) translateY(-20px)";
-  setTimeout(() => hero.style.transform = "scale(1)", 400);
+    // Equipment Logic
+    const layers = [
+        { art: 'armorArt', slot: 'sA', label: 'ARMOR ON' },
+        { art: 'weaponArt', slot: 'sW', label: 'WEAPON ON' },
+        { art: 'magicArt', slot: 'sM', label: 'MAGIC ON' }
+    ];
 
-  calcProgress();
-}
+    layers.forEach((l, i) => {
+        if(done > i) {
+            document.getElementById(l.art).classList.add('on');
+            document.getElementById(l.slot).classList.add('active');
+            document.getElementById(l.slot).innerHTML = l.label;
+        } else {
+            document.getElementById(l.art).classList.remove('on');
+            document.getElementById(l.slot).classList.remove('active');
+            document.getElementById(l.slot).innerHTML = l.label.replace('ON', 'OFF');
+        }
+    });
 
-// SYSTEM SYNC
-function calcProgress() {
-  const checks = document.querySelectorAll('.task-check');
-  const allChecksDone = Array.from(checks).every(c => c.checked);
-  const money = document.getElementById('cashInput').value || 0;
-  const percent = Math.min((money / 1000) * 100, 100);
-
-  // Update UI
-  document.getElementById('mainBar').style.width = percent + "%";
-  document.getElementById('xpText').innerText = `XP: ${Math.round(percent)}%`;
-
-  // Jailbreak Mechanic
-  if(allChecksDone) {
-    document.getElementById('jail').style.opacity = "0";
-    document.getElementById('lvlText').innerText = "LVL 2: FREEDOM SEEKER";
-  } else {
-    document.getElementById('jail').style.opacity = "1";
-    document.getElementById('lvlText').innerText = "LVL 1: PRISONER";
-  }
+    if(done === 3) {
+        document.getElementById('jail').style.opacity = "0";
+        document.getElementById('lvlOut').innerText = "LVL 2: FREEDMAN";
+        document.getElementById('lvlOut').style.color = "var(--secondary)";
+    } else {
+        document.getElementById('jail').style.opacity = "1";
+        document.getElementById('lvlOut').innerText = "LVL 1: PRISONER";
+    }
 }
 </script>
 </body>
