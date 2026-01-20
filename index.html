@@ -1,140 +1,224 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Path to Independence</title>
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Path to Independence | Antoine</title>
+
+<style>
+:root {
+  --bg:#05050a;
+  --card:#0f1020;
+  --text:#e9e9ff;
+  --accent:#7c5cff;
+  --secondary:#22d3ee;
+}
+
+/* THEMES */
+[data-theme="Stealth"] {
+  --bg:#0a0a0a;
+  --card:#1a1a1a;
+  --accent:#555;
+  --secondary:#888;
+}
+
+[data-theme="Crimson"] {
+  --bg:#0f0505;
+  --card:#200f0f;
+  --accent:#ff5c5c;
+  --secondary:#ee2222;
+}
+
+body {
+  margin:0;
+  font-family: system-ui, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  transition:.3s;
+}
+
+.wrap {
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+}
+
+h1 {
+  text-align:center;
+  letter-spacing:2px;
+}
+
+.nav {
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin:20px 0;
+}
+
+.tab-btn {
+  padding:10px 20px;
+  background:var(--card);
+  border:1px solid var(--accent);
+  color:white;
+  cursor:pointer;
+  border-radius:8px;
+}
+
+.tab-btn.active {
+  background:var(--accent);
+  box-shadow:0 0 15px var(--accent);
+}
+
+.panel {
+  background:var(--card);
+  border-radius:15px;
+  padding:25px;
+  border:1px solid #2a2a44;
+}
+
+.hidden { display:none; }
+
+.stat-row { margin:15px 0; }
+
+.bar-bg {
+  background:#222;
+  height:12px;
+  border-radius:6px;
+  overflow:hidden;
+  margin-top:5px;
+}
+
+.bar-fill {
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,var(--accent),var(--secondary));
+  transition:.5s;
+}
+
+input, select {
+  width:100%;
+  padding:8px;
+  background:black;
+  color:white;
+  border:1px solid var(--accent);
+  border-radius:6px;
+  margin-top:5px;
+}
+
+.btn {
+  margin-top:15px;
+  padding:12px;
+  width:100%;
+  background:var(--accent);
+  border:none;
+  color:white;
+  font-weight:bold;
+  border-radius:8px;
+  cursor:pointer;
+}
+</style>
 </head>
+
 <body>
-  <div class="glow-bg"></div>
 
-  <div class="app">
-    <header class="topbar">
-      <div class="logo">
-        <div class="logo-icon">PV</div>
-        <div class="logo-text">
-          <div class="logo-title">Path to Independence</div>
-          <div class="logo-subtitle">The Journey to Financial Stability</div>
-        </div>
-      </div>
+<div class="wrap">
 
-      <div class="topbar-right">
-        <button class="icon-btn" id="soundToggle" title="Toggle sounds">
-          🔊
-        </button>
-      </div>
-    </header>
+<h1>PATH TO INDEPENDENCE</h1>
 
-    <main class="panel">
-      <div class="tabs" role="tablist" aria-label="Main tabs">
-        <button class="tab active" data-tab="progress" role="tab" aria-selected="true">Progress</button>
-        <button class="tab" data-tab="contract" role="tab" aria-selected="false">Contract</button>
-        <button class="tab" data-tab="settings" role="tab" aria-selected="false">Settings</button>
-      </div>
+<button class="btn" id="startAudio">START SYSTEM</button>
 
-      <section class="tab-content" id="progress" data-tab-content>
-        <div class="progress-card">
-          <div class="card-header">
-            <div class="card-title">Mission Tracker</div>
-            <div class="card-subtitle">Your path is getting brighter</div>
-          </div>
+<div class="nav">
+  <button class="tab-btn active" onclick="showTab('progress',this)">Progress</button>
+  <button class="tab-btn" onclick="showTab('contract',this)">Contract</button>
+  <button class="tab-btn" onclick="showTab('settings',this)">Settings</button>
+</div>
 
-          <div class="progress-row">
-            <div class="progress-label">Savings</div>
-            <div class="progress-bar">
-              <div class="progress-fill" id="savingsFill"></div>
-            </div>
-            <div class="progress-value" id="savingsValue">$0</div>
-          </div>
+<!-- PROGRESS -->
+<div id="progress" class="panel">
+  <h3>Mission Tracker</h3>
 
-          <div class="progress-row">
-            <div class="progress-label">Debt</div>
-            <div class="progress-bar">
-              <div class="progress-fill debt" id="debtFill"></div>
-            </div>
-            <div class="progress-value" id="debtValue">$0</div>
-          </div>
+  <div class="stat-row">
+    <label>Savings ($1,000 Goal)</label>
+    <input type="number" id="savingsInput" value="0" oninput="updateProgress()">
+    <div class="bar-bg"><div id="savingsBar" class="bar-fill"></div></div>
+  </div>
+</div>
 
-          <div class="progress-row">
-            <div class="progress-label">Income</div>
-            <div class="progress-bar">
-              <div class="progress-fill income" id="incomeFill"></div>
-            </div>
-            <div class="progress-value" id="incomeValue">$0</div>
-          </div>
+<!-- CONTRACT -->
+<div id="contract" class="panel hidden">
+  <h3>Contract Control</h3>
 
-          <div class="actions">
-            <button class="btn primary" id="updateDemo">Run Demo Update</button>
-            <button class="btn" id="resetDemo">Reset</button>
-          </div>
+  <input type="file" id="contractFile" accept=".txt">
 
-          <div class="hint">
-            Tip: Use the demo update to see the interface animate.
-          </div>
-        </div>
-      </section>
-
-      <section class="tab-content hidden" id="contract" data-tab-content>
-        <div class="contract-card">
-          <div class="card-header">
-            <div class="card-title">Contract</div>
-            <div class="card-subtitle">The rules of the quest</div>
-          </div>
-
-          <div class="contract-actions">
-            <button class="btn primary" id="downloadContract">Download as PDF</button>
-            <button class="btn" id="copyContract">Copy to clipboard</button>
-          </div>
-
-          <div class="contract-viewer" id="contractViewer" tabindex="0">
-            <!-- Contract text inserted by JS -->
-          </div>
-        </div>
-      </section>
-
-      <section class="tab-content hidden" id="settings" data-tab-content>
-        <div class="settings-card">
-          <div class="card-header">
-            <div class="card-title">Settings</div>
-            <div class="card-subtitle">Customize your UI</div>
-          </div>
-
-          <div class="setting-row">
-            <label class="setting-label" for="themeSelect">Theme</label>
-            <select class="select" id="themeSelect">
-              <option value="neon">Neon Cyber</option>
-              <option value="matrix">Matrix Green</option>
-              <option value="night">Night Mode</option>
-            </select>
-          </div>
-
-          <div class="setting-row">
-            <label class="setting-label" for="contractMode">Contract Mode</label>
-            <select class="select" id="contractMode">
-              <option value="simple">Simple</option>
-              <option value="detailed">Detailed</option>
-            </select>
-          </div>
-
-          <div class="setting-row">
-            <label class="setting-label" for="autoSound">Auto sound</label>
-            <input type="checkbox" id="autoSound" checked />
-          </div>
-
-          <div class="hint">
-            These settings are saved locally in your browser.
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="footer">
-      <div class="footer-left">Status: <span id="statusText">Online</span></div>
-      <div class="footer-right">© Phantom Vista</div>
-    </footer>
+  <div id="contractDisplay"
+       style="margin-top:10px; background:black; padding:10px; height:150px; overflow:auto; font-size:12px;">
+    Upload contract text to review terms.
   </div>
 
-  <script src="app.js"></script>
+  <label style="margin-top:15px; display:block;">
+    <input type="checkbox" id="agreeCheck"> I agree to this legally binding agreement.
+  </label>
+</div>
+
+<!-- SETTINGS -->
+<div id="settings" class="panel hidden">
+  <h3>System Settings</h3>
+
+  <label>Theme</label>
+  <select id="themeSelect" onchange="changeTheme()">
+    <option value="">Neon</option>
+    <option value="Stealth">Stealth</option>
+    <option value="Crimson">Crimson</option>
+  </select>
+</div>
+
+</div>
+
+<script>
+const bgm = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3");
+bgm.loop = true;
+const click = new Audio("https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3");
+const upgrade = new Audio("https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3");
+
+document.getElementById("startAudio").onclick = () => {
+  bgm.play(); bgm.pause();
+  document.getElementById("startAudio").innerText = "SYSTEM ONLINE";
+};
+
+function showTab(id, btn) {
+  click.play();
+  document.querySelectorAll(".panel").forEach(p=>p.classList.add("hidden"));
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  document.getElementById(id).classList.remove("hidden");
+  btn.classList.add("active");
+}
+
+function updateProgress() {
+  if(!document.getElementById("agreeCheck").checked) return;
+
+  const val = document.getElementById("savingsInput").value;
+  const percent = Math.min((val/1000)*100,100);
+  document.getElementById("savingsBar").style.width = percent+"%";
+
+  localStorage.setItem("savings",val);
+
+  if(percent>=100) upgrade.play();
+}
+
+function changeTheme() {
+  const t = document.getElementById("themeSelect").value;
+  t ? document.body.setAttribute("data-theme",t)
+    : document.body.removeAttribute("data-theme");
+  click.play();
+}
+
+document.getElementById("contractFile").addEventListener("change", e=>{
+  const r = new FileReader();
+  r.onload = ()=>document.getElementById("contractDisplay").innerText = r.result;
+  r.readAsText(e.target.files[0]);
+});
+</script>
+
 </body>
 </html>
+
