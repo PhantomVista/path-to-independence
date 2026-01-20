@@ -3,48 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Path to Independence | MASTER CORE v7</title>
+    <title>Path to Independence | MASTER CORE v9</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #05050a; --panel: #0d0d21; --text: #e9e9ff; 
             --accent: #00ff99; --secondary: #22d3ee; --danger: #ff0055;
+            --health: #ff3e3e;
             --font-pix: 'Press Start 2P', cursive;
         }
 
         body, html { margin: 0; padding: 0; height: 100vh; width: 100vw; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'Rajdhani', sans-serif; }
         
-        /* --- INTRO OVERLAY --- */
+        /* --- FULL INTRO SYSTEM --- */
         #introOverlay { 
             position: fixed; inset: 0; background: var(--bg); z-index: 5000; 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
             padding: 20px; text-align: center; 
         }
+        .config-group { margin-bottom: 20px; width: 260px; }
+        .config-label { font-family: var(--font-pix); font-size: 7px; color: var(--secondary); display: block; margin-bottom: 8px; text-transform: uppercase; }
+        
+        input[type="text"], input[type="file"], select { 
+            width: 100%; padding: 12px; background: #000; border: 1px solid #333; 
+            color: #fff; font-family: 'Rajdhani'; font-size: 16px; border-radius: 4px; text-align: center;
+        }
+
         .char-grid { display: flex; gap: 15px; margin: 20px 0; }
         .char-card { 
             border: 2px solid #333; padding: 10px; cursor: pointer; background: #111; width: 80px; 
             transition: 0.3s; text-align: center;
         }
-        .char-card.selected { border-color: var(--secondary); box-shadow: 0 0 15px var(--secondary); background: #1a1a3a; }
+        .char-card.selected { border-color: var(--secondary); box-shadow: 0 0 15px var(--secondary); background: #0a0a20; }
         .char-card span { font-size: 40px; display: block; margin-bottom: 5px; }
-        .char-label { font-family: var(--font-pix); font-size: 6px; color: #888; text-transform: uppercase; }
 
-        /* --- ARENA & EQUIPMENT SLOTS --- */
+        /* --- ARENA DESIGN --- */
         .arena { 
-            height: 38vh; background: radial-gradient(circle, #1a1a3a 0%, #000 100%); 
+            height: 42vh; background: radial-gradient(circle, #1a1a3a 0%, #000 100%); 
             display: flex; align-items: center; justify-content: center; position: relative; 
-            border-bottom: 2px solid var(--accent); 
+            border-bottom: 2px solid var(--accent); transition: background 0.3s;
         }
         .jail-bars { 
             position: absolute; inset: 0; z-index: 10; 
             background: repeating-linear-gradient(90deg, transparent, transparent 18%, #111 18%, #222 21%); 
-            transition: 1.5s; pointer-events: none; 
+            transition: 1.5s; pointer-events: none; opacity: 1;
         }
         
+        /* SIDE EQUIPMENT SLOTS */
         .side-slots { display: flex; flex-direction: column; gap: 12px; position: absolute; z-index: 20; top: 50%; transform: translateY(-50%); }
         .left-slots { left: 15px; }
         .right-slots { right: 15px; }
-
         .slot { 
             width: 55px; height: 55px; border: 2px solid #222; border-radius: 4px; 
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -52,111 +60,113 @@
         }
         .slot.unlocked { opacity: 1; border-color: #444; cursor: pointer; }
         .slot.equipped { border-color: var(--accent); box-shadow: 0 0 12px var(--accent); background: #0d1a14; }
-        .slot-icon { font-size: 22px; }
         .slot-name { font-family: var(--font-pix); font-size: 5px; margin-top: 5px; color: #666; }
 
-        /* --- HERO SPRITE --- */
-        .hero-container { position: relative; width: 100px; height: 100px; z-index: 5; transition: 0.2s; }
-        .main-sprite { font-size: 70px; filter: drop-shadow(0 0 15px var(--accent)); text-align: center; }
+        /* --- DYNAMIC HERO & DAMAGE --- */
+        .hero-container { position: relative; width: 120px; height: 120px; z-index: 5; transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .main-sprite { font-size: 70px; filter: drop-shadow(0 0 15px var(--accent)); text-align: center; transition: 0.5s; position: relative; }
+        
+        .damage-fx { 
+            position: absolute; inset: 0; font-size: 70px; color: rgba(255,0,0,0.5); 
+            mix-blend-mode: overlay; pointer-events: none; display: none; 
+            animation: shake 0.2s infinite;
+        }
+        
         .hero-equip { position: absolute; font-size: 35px; opacity: 0; transition: 0.4s; pointer-events: none; }
         .hero-equip.visible { opacity: 1; transform: scale(1.1); }
         
         #heroArmor { top: 25px; left: -25px; }
         #heroWeapon { top: 25px; right: -25px; }
         #heroMagic { top: -35px; left: 25px; }
-        #heroAura { position: absolute; inset: -15px; border: 3px solid var(--secondary); border-radius: 50%; opacity: 0; animation: auraPulse 2s infinite; }
+        #heroAura { position: absolute; inset: -15px; border: 3px solid var(--secondary); border-radius: 50%; opacity: 0; }
+        .aura-active { animation: auraPulse 2s infinite !important; opacity: 1 !important; }
 
-        @keyframes auraPulse { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.4); opacity: 0; } }
+        /* --- LOWERED HUD & HEALTH --- */
+        .hero-hud {
+            position: absolute; bottom: 15px; left: 20px; z-index: 40;
+            background: rgba(0,0,0,0.7); padding: 12px; border-left: 4px solid var(--accent);
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+        }
+        .health-bar-container { width: 140px; height: 10px; background: #111; margin-top: 8px; border: 1px solid #333; border-radius: 2px; overflow: hidden; }
+        #healthFill { width: 100%; height: 100%; background: linear-gradient(90deg, #ff0000, #ff5555); transition: 0.5s; }
 
-        /* --- DASHBOARD & TABS --- */
-        .dashboard { height: 62vh; padding: 12px; display: flex; flex-direction: column; background: var(--bg); }
+        /* --- DASHBOARD SYSTEM --- */
+        .dashboard { height: 58vh; padding: 12px; display: flex; flex-direction: column; background: var(--bg); }
         .nav-tabs { display: flex; gap: 5px; margin-bottom: 10px; flex-shrink: 0; }
         .tab-btn { 
             flex: 1; padding: 12px; background: #0a0a15; border: 1px solid #222; 
             color: #555; font-family: var(--font-pix); font-size: 8px; cursor: pointer; transition: 0.2s;
         }
-        .tab-btn.active { border-color: var(--accent); color: #fff; background: #11221a; box-shadow: inset 0 0 10px rgba(0,255,153,0.2); }
+        .tab-btn.active { border-color: var(--accent); color: #fff; background: #11221a; }
 
         .panel-content { flex: 1; overflow-y: auto; padding-right: 5px; }
-        .panel { display: none; }
+        .panel { display: none; animation: fadeIn 0.3s forwards; }
         .panel.active { display: block; }
 
-        /* --- QUEST & VOW STYLING --- */
         .milestone-box { border: 1px solid #222; padding: 15px; border-radius: 8px; margin-bottom: 10px; background: rgba(255,255,255,0.01); transition: 0.3s; }
-        .milestone-box:hover { border-color: #333; background: rgba(255,255,255,0.03); }
         .locked { opacity: 0.15; pointer-events: none; filter: grayscale(1); }
         
-        .task-row { display: flex; align-items: center; gap: 10px; font-size: 14px; padding: 8px 0; border-bottom: 1px solid #111; }
-        .task-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); }
+        .task-row { display: flex; align-items: center; gap: 12px; font-size: 15px; padding: 10px 0; border-bottom: 1px solid #111; }
+        .task-row input { width: 20px; height: 20px; accent-color: var(--accent); }
 
-        #contractDisplay { 
-            font-size: 13px; line-height: 1.6; white-space: pre-wrap; color: #888; 
-            padding: 15px; background: #000; border: 1px solid #111; scroll-behavior: smooth;
-        }
-        .vow-highlight { background: rgba(0, 255, 153, 0.15); color: var(--accent); border-left: 3px solid var(--accent); padding-left: 8px; display: inline-block; width: 100%; }
+        #contractDisplay { font-size: 13px; line-height: 1.6; white-space: pre-wrap; color: #888; padding: 20px; background: #000; border: 1px solid #111; scroll-behavior: smooth; }
+        .vow-highlight { background: rgba(0, 255, 153, 0.15); color: var(--accent); border-left: 3px solid var(--accent); padding-left: 10px; display: block; width: 100%; }
 
-        /* --- FOOTER PROGRESS --- */
+        /* --- FOOTER & ANIMATIONS --- */
         .footer-stats { padding-top: 10px; border-top: 1px solid #222; flex-shrink: 0; }
-        .xp-label-row { display: flex; justify-content: space-between; font-family: var(--font-pix); font-size: 8px; margin-bottom: 6px; }
-        .bar-container { height: 12px; background: #000; border-radius: 6px; border: 1px solid #333; overflow: hidden; }
-        .bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--secondary)); transition: 1.2s cubic-bezier(0.1, 0.9, 0.2, 1); }
+        .bar-container { height: 12px; background: #000; border-radius: 6px; border: 1px solid #333; overflow: hidden; margin-top: 5px; }
+        .bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--secondary)); transition: 1s; }
 
-        /* --- CONFIG FORM --- */
-        .config-group { margin-bottom: 20px; }
-        .config-label { font-family: var(--font-pix); font-size: 7px; color: var(--secondary); display: block; margin-bottom: 8px; }
-        select, input[type="text"] { 
-            width: 100%; padding: 12px; background: #000; border: 1px solid #333; 
-            color: #fff; font-family: 'Rajdhani'; font-size: 16px; border-radius: 4px;
-        }
-
+        @keyframes auraPulse { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.5); opacity: 0; } }
+        @keyframes shake { 0%, 100% { transform: translate(0,0); } 25% { transform: translate(-2px, 2px); } 50% { transform: translate(2px, -2px); } 75% { transform: translate(-2px, -2px); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .flash-red { animation: flashRedFx 0.5s; }
+        @keyframes flashRedFx { 0% { background: rgba(255,0,0,0); } 50% { background: rgba(255,0,0,0.4); } 100% { background: rgba(255,0,0,0); } }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
 <div id="introOverlay">
-    <h1 style="font-family:var(--font-pix); font-size:12px; color:var(--accent); margin-bottom:30px; letter-spacing:2px;">SIGN THE SACRED VOW</h1>
+    <h1 style="font-family:var(--font-pix); font-size:10px; color:var(--accent); margin-bottom:30px; letter-spacing:2px;">IDENTITY ENFORCEMENT</h1>
     
     <div class="config-group">
-        <span class="config-label">LEGAL IDENTITY</span>
-        <input type="text" id="nameInput" placeholder="ENTER FULL NAME..." style="text-align:center;">
+        <span class="config-label">LEGAL NAME</span>
+        <input type="text" id="nameInput" placeholder="ENTER IDENTITY...">
     </div>
 
     <div class="char-grid">
         <div class="char-card" onclick="selectClass('🥷', 'ROGUE', this)">
-            <span>🥷</span><div class="char-label">ROGUE</div>
+            <span>🥷</span><div class="char-label" style="font-family:var(--font-pix); font-size:6px;">ROGUE</div>
         </div>
         <div class="char-card" onclick="selectClass('🛡️', 'KNIGHT', this)">
-            <span>🛡️</span><div class="char-label">KNIGHT</div>
+            <span>🛡️</span><div class="char-label" style="font-family:var(--font-pix); font-size:6px;">KNIGHT</div>
         </div>
         <div class="char-card" onclick="selectClass('🧙‍♂️', 'MAGE', this)">
-            <span>🧙‍♂️</span><div class="char-label">MAGE</div>
+            <span>🧙‍♂️</span><div class="char-label" style="font-family:var(--font-pix); font-size:6px;">MAGE</div>
         </div>
     </div>
 
-    <div class="config-group" style="margin-top:20px;">
-        <span class="config-label">VOW FILE (.TXT)</span>
-        <input type="file" id="vowUpload" onchange="toggleStartBtn()">
+    <div class="config-group">
+        <span class="config-label">UPLOAD VOW (.TXT)</span>
+        <input type="file" id="vowUpload" onchange="checkRequirements()">
     </div>
 
-    <button id="entryBtn" class="tab-btn hidden" onclick="initCore()" style="margin-top:30px; width:260px; color:var(--accent); border-color:var(--accent);">INITIALIZE COMMAND</button>
+    <button id="entryBtn" class="tab-btn hidden" onclick="initCore()" style="width:260px; margin-top:10px; border-color:var(--accent); color:var(--accent);">INITIALIZE SEQUENCE</button>
 </div>
 
 <div id="mainCore">
-    <div class="arena">
-        <div id="jailSystem" class="jail-bars"></div>
+    <div class="arena" id="arenaMain">
+        <div id="jailBars" class="jail-bars"></div>
         
         <div class="side-slots left-slots">
-            <div id="slotArmor" class="slot" onclick="equip('Armor')">
-                <div class="slot-icon">🛡️</div><div class="slot-name">ARMOR</div>
-            </div>
-            <div id="slotMagic" class="slot" onclick="equip('Magic')">
-                <div class="slot-icon">✨</div><div class="slot-name">MAGIC</div>
-            </div>
+            <div id="slotArmor" class="slot" onclick="toggleGear('Armor')"><div style="font-size:22px;">🛡️</div><div class="slot-name">ARMOR</div></div>
+            <div id="slotMagic" class="slot" onclick="toggleGear('Magic')"><div style="font-size:22px;">✨</div><div class="slot-name">MAGIC</div></div>
         </div>
 
-        <div class="hero-container" id="heroAnchor">
-            <div id="mainSprite" class="main-sprite">👤</div>
+        <div class="hero-container" id="heroScale">
+            <div id="mainSprite" class="main-sprite">👤<div id="dmgOverlay" class="damage-fx">🩸</div></div>
             <div id="heroArmor" class="hero-equip">🛡️</div>
             <div id="heroWeapon" class="hero-equip">⚔️</div>
             <div id="heroMagic" class="hero-equip">✨</div>
@@ -164,17 +174,14 @@
         </div>
 
         <div class="side-slots right-slots">
-            <div id="slotWeapon" class="slot" onclick="equip('Weapon')">
-                <div class="slot-icon">⚔️</div><div class="slot-name">WEAPON</div>
-            </div>
-            <div id="slotAura" class="slot" onclick="equip('Aura')">
-                <div class="slot-icon">🌀</div><div class="slot-name">AURA</div>
-            </div>
+            <div id="slotWeapon" class="slot" onclick="toggleGear('Weapon')"><div style="font-size:22px;">⚔️</div><div class="slot-name">WEAPON</div></div>
+            <div id="slotAura" class="slot" onclick="toggleGear('Aura')"><div style="font-size:22px;">🌀</div><div class="slot-name">AURA</div></div>
         </div>
 
-        <div style="position:absolute; top:12px; left:18px; font-family:var(--font-pix); font-size:8px; z-index:30;">
-            <span id="hudName" style="color:var(--secondary);">IDENTITY PENDING</span><br>
-            <span id="hudRank" style="color:var(--danger)">ACT 1: PRISONER</span>
+        <div class="hero-hud">
+            <div id="hudName" style="font-family:var(--font-pix); font-size:8px; color:var(--accent);">IDENTITY</div>
+            <div id="hudRank" style="font-family:var(--font-pix); font-size:6px; color:#666; margin-top:3px;">ACT 1: PRISONER</div>
+            <div class="health-bar-container"><div id="healthFill"></div></div>
         </div>
     </div>
 
@@ -188,55 +195,55 @@
         <div class="panel-content">
             <div id="tabQuests" class="panel active">
                 <div class="milestone-box" id="m1">
-                    <div class="config-label" style="font-size:8px; margin-bottom:12px;">MILESTONE 1: THE CELL</div>
-                    <div class="task-row"><input type="checkbox" onchange="calcProgress()"> <span>Rent Paid / Positive Balance</span></div>
-                    <div class="task-row"><input type="checkbox" onchange="calcProgress()"> <span>Wednesday Budget Review</span></div>
+                    <div class="config-label" style="font-size:8px; margin-bottom:10px;">MILESTONE 1: STABILITY</div>
+                    <div class="task-row"><input type="checkbox" onchange="syncProgress(this)"> <span>Rent Paid / Balance Pos.</span></div>
+                    <div class="task-row"><input type="checkbox" onchange="syncProgress(this)"> <span>Wednesday Compliance</span></div>
                 </div>
-                
                 <div class="milestone-box locked" id="m2">
-                    <div class="config-label" style="font-size:8px; margin-bottom:12px;">MILESTONE 2: THE HALLWAY</div>
-                    <div class="task-row"><input type="checkbox" onchange="calcProgress()"> <span>Reached $1,000 Savings</span></div>
-                    <div class="task-row"><input type="checkbox" onchange="calcProgress()"> <span>Zero Digital Spend (TikTok/Games)</span></div>
+                    <div class="config-label" style="font-size:8px; margin-bottom:10px;">MILESTONE 2: DISCIPLINE</div>
+                    <div class="task-row"><input type="checkbox" onchange="syncProgress(this)"> <span>$1,000 Savings Met</span></div>
+                    <div class="task-row"><input type="checkbox" onchange="syncProgress(this)"> <span>Zero Digital Spend</span></div>
                 </div>
-
                 <div class="milestone-box locked" id="m3">
-                    <div class="config-label" style="font-size:8px; margin-bottom:12px;">MILESTONE 3: THE GATE</div>
-                    <div class="task-row"><input type="checkbox" onchange="calcProgress()"> <span>Personal Insurance Active</span></div>
+                    <div class="config-label" style="font-size:8px; margin-bottom:10px;">MILESTONE 3: PROTECTION</div>
+                    <div class="task-row"><input type="checkbox" onchange="syncProgress(this)"> <span>Personal Insurance Active</span></div>
+                </div>
+                <div class="milestone-box locked" id="m4">
+                    <div class="config-label" style="font-size:8px; margin-bottom:10px;">MILESTONE 4: READINESS</div>
+                    <div class="task-row"><input type="checkbox" onchange="syncProgress(this)"> <span>$2,500 Maintenance Fund</span></div>
                 </div>
             </div>
 
             <div id="tabVows" class="panel">
-                <div id="contractDisplay">Upload your contract in the Config or Intro to begin.</div>
+                <div id="contractDisplay">Pending Ritual...</div>
             </div>
 
             <div id="tabConfig" class="panel">
-                <div class="config-group">
-                    <span class="config-label">VISUAL REALM</span>
+                <div class="config-group" style="width:100%">
+                    <span class="config-label">THEME ENGINE</span>
                     <select onchange="document.body.style.filter = this.value">
-                        <option value="none">DEFAULT</option>
+                        <option value="none">STANDARD</option>
                         <option value="hue-rotate(290deg) brightness(0.8)">BLOOD MOON</option>
                         <option value="grayscale(1) contrast(1.2)">NOIR STEALTH</option>
-                        <option value="sepia(0.5) hue-rotate(150deg)">CYBER PUNK</option>
+                        <option value="sepia(0.6) hue-rotate(140deg)">RETRO CYBER</option>
                     </select>
                 </div>
-                <div class="config-group">
-                    <span class="config-label">BGM STATION</span>
-                    <select id="bgmSelect" onchange="updateBGM()">
+                <div class="config-group" style="width:100%">
+                    <span class="config-label">AUDIO FREQUENCY</span>
+                    <select id="bgmSource" onchange="changeBGM()">
                         <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3">NEON TRAP</option>
                         <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">LO-FI CHILL</option>
+                        <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3">SYNTH WAVE</option>
                     </select>
                 </div>
             </div>
         </div>
 
         <div class="footer-stats">
-            <div class="xp-label-row">
-                <span>INDEPENDENCE PROGRESS</span>
-                <span id="xpPercent">0%</span>
+            <div style="display:flex; justify-content:space-between; font-family:var(--font-pix); font-size:7px; margin-bottom:6px;">
+                <span>VOW PROGRESS</span><span id="xpText">0%</span>
             </div>
-            <div class="bar-container">
-                <div id="xpBar" class="bar-fill"></div>
-            </div>
+            <div class="bar-container"><div id="xpBar" class="bar-fill"></div></div>
         </div>
     </div>
 </div>
@@ -244,21 +251,20 @@
 <script>
     let audio = new Audio();
     let classIcon = '👤';
-    let rawVowText = "";
-    let currentPhase = 1;
-    const inventory = { Armor: false, Weapon: false, Magic: false, Aura: false };
+    let rawContract = "";
+    let hp = 100;
+    let phase = 1;
+    const items = { Armor: false, Weapon: false, Magic: false, Aura: false };
 
     function selectClass(icon, name, el) {
         classIcon = icon;
         document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
         el.classList.add('selected');
-        toggleStartBtn();
+        checkRequirements();
     }
 
-    function toggleStartBtn() {
-        const hasName = document.getElementById('nameInput').value.length > 2;
-        const hasFile = document.getElementById('vowUpload').files.length > 0;
-        if(hasName && hasFile && classIcon !== '👤') {
+    function checkRequirements() {
+        if(document.getElementById('nameInput').value && document.getElementById('vowUpload').files[0] && classIcon !== '👤') {
             document.getElementById('entryBtn').classList.remove('hidden');
         }
     }
@@ -267,57 +273,81 @@
         const file = document.getElementById('vowUpload').files[0];
         const reader = new FileReader();
         reader.onload = (e) => { 
-            rawVowText = e.target.result; 
-            document.getElementById('contractDisplay').innerText = rawVowText;
+            rawContract = e.target.result; 
+            document.getElementById('contractDisplay').innerText = rawContract;
         };
         reader.readAsText(file);
 
-        document.getElementById('mainSprite').innerText = classIcon;
+        document.getElementById('mainSprite').innerHTML = `${classIcon}<div id="dmgOverlay" class="damage-fx">🩸</div>`;
         document.getElementById('hudName').innerText = document.getElementById('nameInput').value.toUpperCase();
         document.getElementById('introOverlay').style.display = 'none';
-        updateBGM();
+        changeBGM();
+        updateHP(0);
     }
 
-    function calcProgress() {
+    function syncProgress(el) {
+        if(!el.checked) updateHP(-20);
+        else updateHP(10);
+
         const all = document.querySelectorAll('#tabQuests input[type="checkbox"]');
         const checked = Array.from(all).filter(i => i.checked).length;
         const p = Math.round((checked / all.length) * 100);
         
         document.getElementById('xpBar').style.width = p + "%";
-        document.getElementById('xpPercent').innerText = p + "%";
+        document.getElementById('xpText').innerText = p + "%";
 
+        checkMilestones();
+    }
+
+    function updateHP(amt) {
+        hp = Math.min(100, Math.max(0, hp + amt));
+        document.getElementById('healthFill').style.width = hp + "%";
+        
+        if(amt < 0) {
+            document.getElementById('arenaMain').classList.add('flash-red');
+            document.getElementById('dmgOverlay').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('arenaMain').classList.remove('flash-red');
+                if(hp > 50) document.getElementById('dmgOverlay').style.display = 'none';
+            }, 500);
+        }
+
+        // Visual Damage Scaling
+        const b = 0.4 + (hp/160);
+        const g = 1 - (hp/100);
+        document.getElementById('mainSprite').style.filter = `brightness(${b}) grayscale(${g})`;
+    }
+
+    function checkMilestones() {
         const m1 = Array.from(document.querySelectorAll('#m1 input')).every(i => i.checked);
         const m2 = Array.from(document.querySelectorAll('#m2 input')).every(i => i.checked);
+        const m3 = Array.from(document.querySelectorAll('#m3 input')).every(i => i.checked);
 
-        if(m1) { 
-            unlockPhase(2, 'Armor'); 
-            document.getElementById('jailSystem').style.opacity = "0.4";
-            currentPhase = 2;
-        }
-        if(m2) { 
-            unlockPhase(3, 'Weapon'); 
-            document.getElementById('jailSystem').style.display = "none";
+        if(m1 && phase < 2) evolve(2, 'Armor');
+        if(m2 && phase < 3) evolve(3, 'Weapon');
+        if(m3 && phase < 4) evolve(4, 'Magic');
+    }
+
+    function evolve(lvl, slotId) {
+        phase = lvl;
+        document.getElementById('m' + lvl).classList.remove('locked');
+        document.getElementById('slot' + slotId).classList.add('unlocked');
+        document.getElementById('jailBars').style.opacity = Math.max(0, 1 - (lvl * 0.3));
+        if(lvl >= 3) {
+            document.getElementById('jailBars').style.display = "none";
             document.getElementById('hudRank').innerText = "ACT 2: FREEDMAN";
             document.getElementById('hudRank').style.color = "var(--accent)";
-            currentPhase = 3;
         }
+        // Character Growth Logic
+        document.getElementById('heroScale').style.transform = `scale(${1 + (lvl*0.15)})`;
     }
 
-    function unlockPhase(num, slotId) {
-        document.getElementById('m' + num).classList.remove('locked');
-        document.getElementById('slot' + slotId).classList.add('unlocked');
-    }
-
-    function equip(type) {
+    function toggleGear(type) {
         if(!document.getElementById('slot' + type).classList.contains('unlocked')) return;
-        inventory[type] = !inventory[type];
-        document.getElementById('slot' + type).classList.toggle('equipped', inventory[type]);
-        
-        if(type === 'Aura') {
-            document.getElementById('heroAura').style.opacity = inventory[type] ? "1" : "0";
-        } else {
-            document.getElementById('hero' + type).classList.toggle('visible', inventory[type]);
-        }
+        items[type] = !items[type];
+        document.getElementById('slot' + type).classList.toggle('equipped', items[type]);
+        if(type === 'Aura') document.getElementById('heroAura').classList.toggle('aura-active', items[type]);
+        else document.getElementById('hero' + type).classList.toggle('visible', items[type]);
     }
 
     function showTab(id, btn) {
@@ -325,29 +355,22 @@
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        
-        if(id === 'tabVows' && rawVowText !== "") {
-            handleVowScroll();
-        }
+        if(id === 'tabVows') autoScrollVow();
     }
 
-    function handleVowScroll() {
-        const triggers = ["Rent", "Savings", "Insurance"];
-        const key = triggers[currentPhase - 1];
-        const box = document.getElementById('contractDisplay');
-        
-        const regex = new RegExp(`(${key})`, 'gi');
-        box.innerHTML = rawVowText.replace(regex, '<span class="vow-highlight" id="vowTarget">$1</span>');
-        
-        const target = document.getElementById('vowTarget');
-        if(target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    function autoScrollVow() {
+        const keys = ["Rent", "Savings", "Insurance", "Maintenance"];
+        const target = keys[phase - 1];
+        if(!rawContract.includes(target)) return;
+        const regex = new RegExp(`(${target})`, 'gi');
+        document.getElementById('contractDisplay').innerHTML = rawContract.replace(regex, '<span class="vow-highlight" id="scrollMark">$1</span>');
+        document.getElementById('scrollMark')?.scrollIntoView({behavior:'smooth', block:'center'});
     }
 
-    function updateBGM() {
+    function changeBGM() {
         audio.pause();
-        audio = new Audio(document.getElementById('bgmSelect').value);
-        audio.loop = true;
-        audio.play().catch(() => console.log("Audio requires interaction"));
+        audio = new Audio(document.getElementById('bgmSource').value);
+        audio.loop = true; audio.play().catch(() => {});
     }
 </script>
 </body>
