@@ -3,306 +3,230 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Path to Independence | Antoine</title>
+<title>Path to Independence | RPG</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Press+Start+2P&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
 
 <style>
 :root {
-  --bg0: #05050a; --bg1: #0a0a14;
-  --card: rgba(15, 16, 32, 0.75);
-  --text: #e9e9ff; --muted: #a9a9c7;
-  --border: #2a2a44; --accent: #7c5cff;
-  --secondary: #22d3ee; --glow: rgba(124, 92, 255, 0.5);
-  --success: #2ecc71; --danger: #e74c3c;
+  --accent: #7c5cff; --secondary: #22d3ee; --danger: #ff0055;
+  --card: rgba(10, 10, 25, 0.95); --font-pixel: 'Press Start 2P', cursive;
 }
 
-/* THEMES */
-[data-theme="Stealth"] { --bg0: #0a0a0a; --bg1: #111; --accent: #555; --secondary: #888; --glow: rgba(255,255,255,0.1); }
-[data-theme="Crimson"] { --bg0: #0f0505; --bg1: #1a0505; --accent: #ff5c5c; --secondary: #ee2222; --glow: rgba(255, 92, 92, 0.5); }
-
-body {
-  margin: 0; font-family: ui-sans-serif, system-ui, sans-serif;
-  background: radial-gradient(1200px 700px at 20% 10%, rgba(124,92,255,0.15), transparent 50%),
-              radial-gradient(900px 600px at 80% 20%, rgba(34,211,238,0.1), transparent 50%),
-              linear-gradient(180deg, var(--bg0), var(--bg1));
-  color: var(--text); min-height: 100vh; transition: 0.3s ease;
-  overflow-x: hidden;
+body, html { 
+  margin: 0; padding: 0; height: 100vh; width: 100vw; 
+  overflow: hidden; background: #05050a; color: #fff; font-family: 'Rajdhani', sans-serif;
 }
 
-.wrap { max-width: 800px; margin: auto; padding: 20px; }
-
-/* HEADER */
-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 15px; background: var(--card); border: 1px solid var(--border);
-  border-radius: 16px; backdrop-filter: blur(10px); margin-bottom: 20px;
-}
-.logo-box {
-  width: 40px; height: 40px; border-radius: 8px;
-  background: linear-gradient(135deg, var(--accent), var(--secondary));
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 800; color: #000; box-shadow: 0 0 15px var(--glow);
+/* INTRO STORY SYSTEM */
+#introOverlay {
+  position: fixed; inset: 0; background: radial-gradient(circle, #1a1a2e, #000);
+  z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 40px; transition: 1s;
 }
 
-/* NAVIGATION */
-.nav { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+#storyScroll {
+  max-width: 600px; text-align: center; line-height: 1.8; margin: 20px 0;
+  font-family: var(--font-pixel); font-size: 12px; color: var(--secondary);
+}
+
+/* MAIN LAYOUT: NO SCROLL */
+#gameWorld {
+  display: flex; flex-direction: column; height: 100vh; width: 100vw;
+  background: linear-gradient(to bottom, #0f0c29, #111);
+}
+
+/* HERO AREA - ENLARGED & INTERACTIVE */
+.hero-env {
+  flex: 0 0 45%; position: relative; border-bottom: 4px solid #222;
+  background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+}
+
+.jail-bars {
+  position: absolute; inset: 0; z-index: 10;
+  background: repeating-linear-gradient(90deg, transparent, transparent 15%, #222 15%, #111 18%);
+  transition: 1s;
+}
+
+.hero-sprite {
+  position: absolute; bottom: 20%; left: 50%; transform: translateX(-50%);
+  font-size: 120px; cursor: pointer; transition: 0.3s; z-index: 5;
+  image-rendering: pixelated; filter: drop-shadow(0 0 20px var(--accent));
+}
+.hero-sprite:hover { transform: translateX(-50%) scale(1.1); filter: brightness(1.3); }
+.hero-sprite:active { transform: translateX(-50%) scale(0.9); }
+
+/* UI AREA - NO SCROLL */
+.ui-shell { flex: 1; display: flex; flex-direction: column; padding: 15px; gap: 10px; }
+
+.nav-tabs { display: flex; gap: 10px; height: 50px; }
 .tab-btn {
-  padding: 10px 20px; background: var(--card); border: 1px solid var(--border);
-  color: var(--text); cursor: pointer; border-radius: 10px; font-weight: 600;
-  transition: 0.2s; flex: 1; text-align: center;
+  flex: 1; border: 2px solid #333; background: #111; color: #888;
+  font-family: var(--font-pixel); font-size: 10px; cursor: pointer;
 }
-.tab-btn.active {
-  background: var(--accent); border-color: var(--accent);
-  box-shadow: 0 0 20px var(--glow); transform: translateY(-2px);
-}
+.tab-btn.active { border-color: var(--accent); color: #fff; box-shadow: 0 0 15px var(--accent); }
 
-/* PANELS */
+.panel-container { flex: 1; position: relative; }
 .panel {
-  background: var(--card); border-radius: 20px; padding: 25px;
-  border: 1px solid var(--border); backdrop-filter: blur(12px);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-.hidden { display: none; }
-
-/* MILESTONE STYLING */
-.milestone-card {
-  border-left: 3px solid var(--border); padding-left: 20px; margin-bottom: 30px;
-  transition: 0.3s;
-}
-.milestone-card.active { border-left-color: var(--secondary); opacity: 1; }
-.milestone-card.locked { opacity: 0.4; pointer-events: none; }
-
-.status-badge {
-  display: inline-block; padding: 4px 10px; border-radius: 4px;
-  font-size: 11px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px;
+  position: absolute; inset: 0; background: var(--card); border-radius: 12px;
+  padding: 20px; border: 1px solid #333; display: flex; flex-direction: column; justify-content: space-around;
 }
 
-/* INPUTS & PROGRESS */
-.bar-bg { background: rgba(0,0,0,0.3); height: 12px; border-radius: 6px; overflow: hidden; margin: 10px 0; border: 1px solid var(--border); }
-.bar-fill {
-  height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--secondary));
-  transition: 0.8s ease; box-shadow: 0 0 10px var(--glow);
+/* PROGRESS BARS & INPUTS */
+.quest-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #222; }
+.bar-bg { background: #000; height: 20px; border-radius: 10px; border: 1px solid #444; overflow: hidden; margin: 5px 0; }
+.bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--secondary)); transition: 1s; }
+
+input[type="number"] {
+  width: 100%; padding: 12px; background: #000; border: 1px solid #444; color: #fff; font-size: 18px; text-align: center;
 }
 
-input, select {
-  width: 100%; padding: 10px; background: rgba(0,0,0,0.5); color: #fff;
-  border: 1px solid var(--border); border-radius: 8px; margin-top: 5px; box-sizing: border-box;
-}
-
-label.check-item {
-  display: flex; align-items: center; gap: 10px; margin: 8px 0;
-  font-size: 14px; cursor: pointer; color: var(--muted);
-}
-label.check-item input { width: 18px; height: 18px; margin: 0; }
-
-#contractDisplay {
-  background: rgba(0,0,0,0.4); border: 1px solid var(--border);
-  padding: 15px; border-radius: 8px; height: 180px; overflow-y: auto;
-  font-family: monospace; font-size: 12px; white-space: pre-wrap;
-}
+.hidden { display: none !important; }
 </style>
 </head>
-
 <body>
-<div class="wrap">
-  <header>
-    <div style="display:flex; align-items:center; gap:12px;">
-      <div class="logo-box">PI</div>
-      <div>
-        <h2 style="margin:0; font-size:16px; letter-spacing:1px;">COMMAND CENTER</h2>
-        <p id="currentStatus" style="margin:0; font-size:11px; color:var(--muted);">LVL 1: STABILITY PHASE</p>
-      </div>
-    </div>
-    <div id="globalProgress" style="font-weight:bold; color:var(--secondary);">0%</div>
-  </header>
 
-  <div class="nav">
-    <button class="tab-btn active" onclick="showTab('progress',this)">Progress</button>
-    <button class="tab-btn" onclick="showTab('contract',this)">Contract</button>
-    <button class="tab-btn" onclick="showTab('settings',this)">Settings</button>
+<div id="introOverlay">
+  <div id="charSetup">
+    <h1 class="font-pixel" style="font-size: 18px;">SELECT YOUR AVATAR</h1>
+    <div style="display:flex; gap:20px; margin: 30px;">
+      <div class="char-card" onclick="pick('🛡️','Knight')">🛡️<p>Knight</p></div>
+      <div class="char-card" onclick="pick('🥷','Rogue')">🥷<p>Rogue</p></div>
+      <div class="char-card" onclick="pick('🧙‍♂️','Mage')">🧙‍♂️<p>Mage</p></div>
+    </div>
+    <input type="file" id="contractFile" style="margin-bottom:20px;">
+    <button onclick="weaveStory()" class="tab-btn" style="padding:15px 30px;">WEAVE MY DESTINY</button>
   </div>
 
-  <div id="progress" class="panel">
-    
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;">
-      <div id="rewardInternet" style="background:rgba(0,0,0,0.3); padding:10px; border-radius:10px; text-align:center; border:1px solid var(--danger);">
-        <div style="font-size:9px; color:var(--muted);">INTERNET & POWER</div>
-        <div class="val" style="font-weight:bold; color:var(--danger);">OFFLINE</div>
-      </div>
-      <div id="rewardVehicle" style="background:rgba(0,0,0,0.3); padding:10px; border-radius:10px; text-align:center; border:1px solid var(--border);">
-        <div style="font-size:9px; color:var(--muted);">VEHICLE PRIVILEGE</div>
-        <div class="val" style="font-weight:bold; color:var(--muted);">WORK ONLY</div>
-      </div>
-    </div>
+  <div id="storyDisplay" class="hidden">
+    <div id="storyScroll"></div>
+    <button onclick="enterWorld()" class="tab-btn" style="padding:15px 30px; margin-top:20px;">ENTER THE JAIL</button>
+  </div>
+</div>
 
-    <div class="milestone-card active" id="m1">
-      <div class="status-badge" style="background:var(--secondary); color:#000;">Milestone 1: Stability</div>
-      <label class="check-item"><input type="checkbox" class="m1-check" onchange="updateSystem()"> Account Balance Positive</label>
-      <label class="check-item"><input type="checkbox" class="m1-check" onchange="updateSystem()"> Rent Paid ($250)</label>
-      <label class="check-item"><input type="checkbox" class="m1-check" onchange="updateSystem()"> Wednesday Meeting Verified</label>
+<div id="gameWorld">
+  <div class="hero-env">
+    <div id="jailBars" class="jail-bars"></div>
+    <div id="hero" class="hero-sprite" onclick="heroInteract()">👤</div>
+    <div style="position:absolute; top:10px; left:10px;" class="font-pixel">
+      <span id="lvlLabel">LVL 1: PRISONER</span><br>
+      <span id="xpLabel" style="color:var(--secondary)">0% XP</span>
     </div>
-
-    <div class="milestone-card locked" id="m2">
-      <div class="status-badge" style="background:var(--border); color:var(--muted);">Milestone 2: Discipline</div>
-      <p style="font-size:12px; margin: 5px 0;">Savings Goal (Target: $1,000)</p>
-      <input type="number" id="savingsInput" placeholder="Enter amount..." oninput="updateSystem()">
-      <div class="bar-bg"><div id="saveBar" class="bar-fill"></div></div>
-      <p style="font-size:10px; color:var(--accent);">ZERO-TOLERANCE DIGITAL SPENDING POLICY ACTIVE</p>
-    </div>
-
-    <div class="milestone-card locked" id="m3">
-      <div class="status-badge" style="background:var(--border); color:var(--muted);">Milestone 3: Responsibility</div>
-      <label class="check-item"><input type="checkbox" id="m3_insurance" onchange="updateSystem()"> Proof of Personal Car Insurance</label>
-      <label class="check-item"><input type="checkbox" id="m3_work" onchange="updateSystem()"> Consistent Full-Time Employment</label>
-    </div>
-
   </div>
 
-  <div id="contract" class="panel hidden">
-    <h3><span style="color:var(--secondary)">></span> Initialize Agreement</h3>
-    <input type="file" id="contractFile" accept=".txt">
-    <div id="contractDisplay" style="margin-top:15px;">Awaiting contract upload...</div>
-    <label style="margin-top:20px; display:flex; align-items:center; gap:12px; cursor:pointer;">
-      <input type="checkbox" id="agreeCheck" style="width:22px; height:22px;" onchange="updateSystem()"> 
-      <span style="font-weight:bold;">I agree to these terms as legally binding.</span>
-    </label>
-  </div>
-
-  <div id="settings" class="panel hidden">
-    <h3><span style="color:var(--secondary)">></span> System Configuration</h3>
-    <div style="margin-bottom:20px;">
-      <label>Visual Interface Theme</label>
-      <select id="themeSelect" onchange="changeTheme()">
-        <option value="">Neon Cyber (Standard)</option>
-        <option value="Stealth">Stealth Mode</option>
-        <option value="Crimson">Crimson Alert</option>
-      </select>
+  <div class="ui-shell">
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="tab('q',this)">QUESTS</button>
+      <button class="tab-btn" onclick="tab('v',this)">VOWS</button>
+      <button class="tab-btn" onclick="tab('c',this)">CONFIG</button>
     </div>
-    <button onclick="localStorage.clear(); location.reload();" style="background:var(--danger); color:white; border:none; padding:10px; border-radius:8px; cursor:pointer; width:100%; font-weight:bold;">RESET ALL DATA</button>
+
+    <div class="panel-container">
+      <div id="q" class="panel">
+        <div class="quest-item">
+          <label>Rent Paid ($250)</label>
+          <input type="checkbox" class="task" onchange="sync()">
+        </div>
+        <div class="quest-item">
+          <label>Wednesday Meeting</label>
+          <input type="checkbox" class="task" onchange="sync()">
+        </div>
+        <div class="quest-item">
+          <label>Positive Balance</label>
+          <input type="checkbox" class="task" onchange="sync()">
+        </div>
+        <div style="margin-top:10px;">
+          <div style="display:flex; justify-content:space-between; font-size:12px;">
+            <span>VAULT SAVINGS</span><span id="goldVal">$0 / $1000</span>
+          </div>
+          <div class="bar-bg"><div id="saveBar" class="bar-fill"></div></div>
+          <input type="number" id="goldInput" value="0" oninput="sync()">
+        </div>
+      </div>
+
+      <div id="v" class="panel hidden">
+        <div id="vowContent" style="font-size:12px; line-height:1.4; color:#aaa;"></div>
+      </div>
+
+      <div id="c" class="panel hidden">
+        <label>SYSTEM VOLUME</label>
+        <input type="range" min="0" max="1" step="0.1" onchange="bgm.volume=this.value">
+        <button onclick="localStorage.clear(); location.reload();" style="color:red; margin-top:20px;">DELETE DATA</button>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
-// AUDIO SYSTEM
-const bgm = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3");
+let bgm = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3");
 bgm.loop = true;
-const clickSfx = new Audio("https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3");
-const levelUpSfx = new Audio("https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3");
+let heroData = { icon: '👤', class: '', contract: '' };
 
-let audioUnlocked = false;
-
-function unlockAudio() {
-  if (audioUnlocked) return;
-  bgm.volume = 0.3;
-  bgm.play().catch(() => {});
-  audioUnlocked = true;
+function pick(icon, cls) {
+  heroData.icon = icon; heroData.class = cls;
+  document.querySelectorAll('.char-card').forEach(c => c.style.borderColor = '#333');
+  event.currentTarget.style.borderColor = 'var(--secondary)';
 }
 
-// TAB NAVIGATION
-function showTab(id, btn) {
-  unlockAudio();
-  clickSfx.play();
-  document.querySelectorAll(".panel").forEach(p => p.classList.add("hidden"));
-  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-  document.getElementById(id).classList.remove("hidden");
-  btn.classList.add("active");
-}
-
-// CORE SYSTEM LOGIC
-function updateSystem() {
-  unlockAudio();
-  const isAgreed = document.getElementById("agreeCheck").checked;
+function weaveStory() {
+  const file = document.getElementById('contractFile').files[0];
+  if(!file) return alert("Upload your contract to start the story!");
   
-  // Milestone 1 Logic
-  const m1Checks = document.querySelectorAll('.m1-check');
-  const m1Done = Array.from(m1Checks).every(c => c.checked);
-  const internetEl = document.getElementById('rewardInternet');
-
-  if (m1Done && isAgreed) {
-    internetEl.style.borderColor = "var(--success)";
-    internetEl.querySelector('.val').innerText = "ONLINE";
-    internetEl.querySelector('.val').style.color = "var(--success)";
-    document.getElementById('m2').classList.remove('locked');
-    document.getElementById('m2').classList.add('active');
-    document.getElementById('savingsInput').disabled = false;
-  } else {
-    internetEl.style.borderColor = "var(--danger)";
-    internetEl.querySelector('.val').innerText = "OFFLINE";
-    internetEl.querySelector('.val').style.color = "var(--danger)";
-    document.getElementById('m2').classList.add('locked');
-    document.getElementById('savingsInput').disabled = true;
-  }
-
-  // Milestone 2 Logic
-  const savings = document.getElementById('savingsInput').value || 0;
-  const savePercent = Math.min((savings / 1000) * 100, 100);
-  document.getElementById('saveBar').style.width = savePercent + '%';
-
-  if (savePercent >= 100 && m1Done) {
-    document.getElementById('m3').classList.remove('locked');
-    document.getElementById('m3').classList.add('active');
-    if(savings == 1000) levelUpSfx.play();
-  } else {
-    document.getElementById('m3').classList.add('locked');
-  }
-
-  // Milestone 3 Logic
-  const m3Done = document.getElementById('m3_insurance').checked && document.getElementById('m3_work').checked;
-  const vehicleEl = document.getElementById('rewardVehicle');
-  if (m3Done) {
-    vehicleEl.style.borderColor = "var(--success)";
-    vehicleEl.querySelector('.val').innerText = "FULL ACCESS";
-    vehicleEl.querySelector('.val').style.color = "var(--success)";
-  } else {
-    vehicleEl.style.borderColor = "var(--border)";
-    vehicleEl.querySelector('.val').innerText = "WORK ONLY";
-    vehicleEl.querySelector('.val').style.color = "var(--muted)";
-  }
-
-  // Global Progress Percent
-  const allChecks = document.querySelectorAll('input[type="checkbox"]').length;
-  const checked = document.querySelectorAll('input[type="checkbox"]:checked').length;
-  const totalProg = Math.round(((checked / allChecks) * 0.7 + (savePercent / 100) * 0.3) * 100);
-  document.getElementById('globalProgress').innerText = totalProg + '%';
-
-  // Save State
-  const state = {
-    m1: Array.from(m1Checks).map(c => c.checked),
-    savings: savings,
-    m3: [document.getElementById('m3_insurance').checked, document.getElementById('m3_work').checked],
-    agreed: isAgreed
-  };
-  localStorage.setItem("independence_state", JSON.stringify(state));
-}
-
-// THEME SWITCHER
-function changeTheme() {
-  unlockAudio();
-  clickSfx.play();
-  const t = document.getElementById("themeSelect").value;
-  t ? document.body.setAttribute("data-theme", t) : document.body.removeAttribute("data-theme");
-}
-
-// CONTRACT UPLOADER
-document.getElementById("contractFile").addEventListener("change", e => {
   const reader = new FileReader();
-  reader.onload = () => {
-    document.getElementById("contractDisplay").innerText = reader.result;
-    clickSfx.play();
+  reader.onload = (e) => {
+    heroData.contract = e.target.result;
+    document.getElementById('charSetup').classList.add('hidden');
+    document.getElementById('storyDisplay').classList.remove('hidden');
+    
+    // Custom Narrative Generator
+    const text = `In the year 2026, the ${heroData.class} was cast into the Dungeon of Debt. 
+    To escape, they signed a Sacred Vow: "${heroData.contract.substring(0, 60)}..." 
+    The bars will only break when the $1000 Vault is filled. Begin your quest.`;
+    
+    document.getElementById('storyScroll').innerText = text;
+    document.getElementById('vowContent').innerText = heroData.contract;
   };
-  reader.readAsText(e.target.files[0]);
-});
+  reader.readAsText(file);
+}
 
-// INITIAL LOAD
-window.onload = () => {
-  const saved = JSON.parse(localStorage.getItem("independence_state"));
-  if(saved) {
-    const m1Checks = document.querySelectorAll('.m1-check');
-    saved.m1.forEach((v, i) => m1Checks[i].checked = v);
-    document.getElementById('savingsInput').value = saved.savings;
-    document.getElementById('m3_insurance').checked = saved.m3[0];
-    document.getElementById('m3_work').checked = saved.m3[1];
-    document.getElementById('agreeCheck').checked = saved.agreed;
-    updateSystem();
+function enterWorld() {
+  document.getElementById('introOverlay').style.opacity = '0';
+  setTimeout(() => {
+    document.getElementById('introOverlay').classList.add('hidden');
+    document.getElementById('hero').innerText = heroData.icon;
+    bgm.play();
+  }, 1000);
+}
+
+function tab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.remove('hidden');
+  btn.classList.add('active');
+}
+
+function heroInteract() {
+  const s = document.getElementById('hero');
+  s.style.transform = "translateX(-50%) scale(1.4) rotate(10deg)";
+  setTimeout(() => s.style.transform = "translateX(-50%) scale(1)", 200);
+}
+
+function sync() {
+  const tasks = document.querySelectorAll('.task');
+  const allDone = Array.from(tasks).every(t => t.checked);
+  const gold = document.getElementById('goldInput').value || 0;
+  const percent = Math.min((gold / 1000) * 100, 100);
+
+  document.getElementById('saveBar').style.width = percent + "%";
+  document.getElementById('goldVal').innerText = `$${gold} / $1000`;
+  document.getElementById('xpLabel').innerText = Math.round(percent) + "% XP";
+
+  // Escape Logic
+  if(allDone) {
+    document.getElementById('jailBars').style.opacity = "0";
+    document.getElementById('lvlLabel').innerText = "LVL 2: ESCAPEE";
+  } else {
+    document.getElementById('jailBars').style.opacity = "1";
+    document.getElementById('lvlLabel').innerText = "LVL 1: PRISONER";
   }
 }
 </script>
