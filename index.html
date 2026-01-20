@@ -8,10 +8,11 @@
 <style>
 :root {
   --bg0: #05050a; --bg1: #0a0a14;
-  --card: rgba(15, 16, 32, 0.7);
+  --card: rgba(15, 16, 32, 0.75);
   --text: #e9e9ff; --muted: #a9a9c7;
   --border: #2a2a44; --accent: #7c5cff;
   --secondary: #22d3ee; --glow: rgba(124, 92, 255, 0.5);
+  --success: #2ecc71; --danger: #e74c3c;
 }
 
 /* THEMES */
@@ -24,34 +25,37 @@ body {
               radial-gradient(900px 600px at 80% 20%, rgba(34,211,238,0.1), transparent 50%),
               linear-gradient(180deg, var(--bg0), var(--bg1));
   color: var(--text); min-height: 100vh; transition: 0.3s ease;
+  overflow-x: hidden;
 }
 
-.wrap { max-width: 900px; margin: auto; padding: 30px 15px; }
+.wrap { max-width: 800px; margin: auto; padding: 20px; }
 
+/* HEADER */
 header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 15px; background: var(--card); border: 1px solid var(--border);
   border-radius: 16px; backdrop-filter: blur(10px); margin-bottom: 20px;
 }
-
 .logo-box {
-  width: 45px; height: 45px; border-radius: 10px;
+  width: 40px; height: 40px; border-radius: 8px;
   background: linear-gradient(135deg, var(--accent), var(--secondary));
   display: flex; align-items: center; justify-content: center;
   font-weight: 800; color: #000; box-shadow: 0 0 15px var(--glow);
 }
 
-.nav { display: flex; justify-content: center; gap: 12px; margin-bottom: 20px; }
+/* NAVIGATION */
+.nav { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
 .tab-btn {
-  padding: 10px 24px; background: var(--card); border: 1px solid var(--border);
-  color: var(--text); cursor: pointer; border-radius: 12px; font-weight: 600;
-  transition: 0.2s; backdrop-filter: blur(5px);
+  padding: 10px 20px; background: var(--card); border: 1px solid var(--border);
+  color: var(--text); cursor: pointer; border-radius: 10px; font-weight: 600;
+  transition: 0.2s; flex: 1; text-align: center;
 }
 .tab-btn.active {
   background: var(--accent); border-color: var(--accent);
   box-shadow: 0 0 20px var(--glow); transform: translateY(-2px);
 }
 
+/* PANELS */
 .panel {
   background: var(--card); border-radius: 20px; padding: 25px;
   border: 1px solid var(--border); backdrop-filter: blur(12px);
@@ -59,28 +63,41 @@ header {
 }
 .hidden { display: none; }
 
-.bar-bg { background: rgba(0,0,0,0.3); height: 16px; border-radius: 8px; overflow: hidden; margin-top: 10px; border: 1px solid var(--border); }
+/* MILESTONE STYLING */
+.milestone-card {
+  border-left: 3px solid var(--border); padding-left: 20px; margin-bottom: 30px;
+  transition: 0.3s;
+}
+.milestone-card.active { border-left-color: var(--secondary); opacity: 1; }
+.milestone-card.locked { opacity: 0.4; pointer-events: none; }
+
+.status-badge {
+  display: inline-block; padding: 4px 10px; border-radius: 4px;
+  font-size: 11px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px;
+}
+
+/* INPUTS & PROGRESS */
+.bar-bg { background: rgba(0,0,0,0.3); height: 12px; border-radius: 6px; overflow: hidden; margin: 10px 0; border: 1px solid var(--border); }
 .bar-fill {
   height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--secondary));
-  transition: 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67); box-shadow: 0 0 15px var(--glow);
+  transition: 0.8s ease; box-shadow: 0 0 10px var(--glow);
 }
 
 input, select {
-  width: 100%; padding: 12px; background: rgba(0,0,0,0.5); color: #fff;
-  border: 1px solid var(--border); border-radius: 8px; margin-top: 8px;
+  width: 100%; padding: 10px; background: rgba(0,0,0,0.5); color: #fff;
+  border: 1px solid var(--border); border-radius: 8px; margin-top: 5px; box-sizing: border-box;
 }
 
-.btn {
-  margin-top: 20px; padding: 14px; width: 100%; font-weight: 800;
-  background: linear-gradient(90deg, var(--accent), var(--secondary));
-  border: none; color: #000; border-radius: 10px; cursor: pointer;
-  text-transform: uppercase; letter-spacing: 1px;
+label.check-item {
+  display: flex; align-items: center; gap: 10px; margin: 8px 0;
+  font-size: 14px; cursor: pointer; color: var(--muted);
 }
+label.check-item input { width: 18px; height: 18px; margin: 0; }
 
 #contractDisplay {
   background: rgba(0,0,0,0.4); border: 1px solid var(--border);
-  padding: 15px; border-radius: 8px; height: 200px; overflow-y: auto;
-  font-family: monospace; font-size: 13px;
+  padding: 15px; border-radius: 8px; height: 180px; overflow-y: auto;
+  font-family: monospace; font-size: 12px; white-space: pre-wrap;
 }
 </style>
 </head>
@@ -91,10 +108,11 @@ input, select {
     <div style="display:flex; align-items:center; gap:12px;">
       <div class="logo-box">PI</div>
       <div>
-        <h2 style="margin:0; font-size:18px;">Independence Command</h2>
-        <p style="margin:0; font-size:12px; color:var(--muted);">Status: Monitoring Actions</p>
+        <h2 style="margin:0; font-size:16px; letter-spacing:1px;">COMMAND CENTER</h2>
+        <p id="currentStatus" style="margin:0; font-size:11px; color:var(--muted);">LVL 1: STABILITY PHASE</p>
       </div>
     </div>
+    <div id="globalProgress" style="font-weight:bold; color:var(--secondary);">0%</div>
   </header>
 
   <div class="nav">
@@ -104,51 +122,82 @@ input, select {
   </div>
 
   <div id="progress" class="panel">
-    <h3><span style="color:var(--secondary)">></span> Mission Tracker</h3>
-    <div style="margin: 20px 0;">
-      <label>Current Savings (Goal: $1,000)</label>
-      <input type="number" id="savingsInput" placeholder="Update balance..." oninput="updateProgress()">
-      <div class="bar-bg"><div id="savingsBar" class="bar-fill"></div></div>
+    
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;">
+      <div id="rewardInternet" style="background:rgba(0,0,0,0.3); padding:10px; border-radius:10px; text-align:center; border:1px solid var(--danger);">
+        <div style="font-size:9px; color:var(--muted);">INTERNET & POWER</div>
+        <div class="val" style="font-weight:bold; color:var(--danger);">OFFLINE</div>
+      </div>
+      <div id="rewardVehicle" style="background:rgba(0,0,0,0.3); padding:10px; border-radius:10px; text-align:center; border:1px solid var(--border);">
+        <div style="font-size:9px; color:var(--muted);">VEHICLE PRIVILEGE</div>
+        <div class="val" style="font-weight:bold; color:var(--muted);">WORK ONLY</div>
+      </div>
     </div>
-    <p style="font-size:13px; color:var(--muted);">TikTok spending detected on Jan 18. Milestone reset active until verification.</p>
+
+    <div class="milestone-card active" id="m1">
+      <div class="status-badge" style="background:var(--secondary); color:#000;">Milestone 1: Stability</div>
+      <label class="check-item"><input type="checkbox" class="m1-check" onchange="updateSystem()"> Account Balance Positive</label>
+      <label class="check-item"><input type="checkbox" class="m1-check" onchange="updateSystem()"> Rent Paid ($250)</label>
+      <label class="check-item"><input type="checkbox" class="m1-check" onchange="updateSystem()"> Wednesday Meeting Verified</label>
+    </div>
+
+    <div class="milestone-card locked" id="m2">
+      <div class="status-badge" style="background:var(--border); color:var(--muted);">Milestone 2: Discipline</div>
+      <p style="font-size:12px; margin: 5px 0;">Savings Goal (Target: $1,000)</p>
+      <input type="number" id="savingsInput" placeholder="Enter amount..." oninput="updateSystem()">
+      <div class="bar-bg"><div id="saveBar" class="bar-fill"></div></div>
+      <p style="font-size:10px; color:var(--accent);">ZERO-TOLERANCE DIGITAL SPENDING POLICY ACTIVE</p>
+    </div>
+
+    <div class="milestone-card locked" id="m3">
+      <div class="status-badge" style="background:var(--border); color:var(--muted);">Milestone 3: Responsibility</div>
+      <label class="check-item"><input type="checkbox" id="m3_insurance" onchange="updateSystem()"> Proof of Personal Car Insurance</label>
+      <label class="check-item"><input type="checkbox" id="m3_work" onchange="updateSystem()"> Consistent Full-Time Employment</label>
+    </div>
+
   </div>
 
   <div id="contract" class="panel hidden">
-    <h3><span style="color:var(--secondary)">></span> Legal Terms</h3>
+    <h3><span style="color:var(--secondary)">></span> Initialize Agreement</h3>
     <input type="file" id="contractFile" accept=".txt">
-    <div id="contractDisplay" style="margin-top:15px;">Review rules: Workouts, Food Pantry, and Wednesday Meetings.</div>
-    <label style="margin-top:20px; display:flex; align-items:center; gap:10px; cursor:pointer;">
-      <input type="checkbox" id="agreeCheck" style="width:20px; height:20px;" onchange="updateProgress()"> 
-      <span>I accept these terms as legally binding.</span>
+    <div id="contractDisplay" style="margin-top:15px;">Awaiting contract upload...</div>
+    <label style="margin-top:20px; display:flex; align-items:center; gap:12px; cursor:pointer;">
+      <input type="checkbox" id="agreeCheck" style="width:22px; height:22px;" onchange="updateSystem()"> 
+      <span style="font-weight:bold;">I agree to these terms as legally binding.</span>
     </label>
   </div>
 
   <div id="settings" class="panel hidden">
-    <h3><span style="color:var(--secondary)">></span> System Config</h3>
-    <label>Visual Theme</label>
-    <select id="themeSelect" onchange="changeTheme()">
-      <option value="">Neon Cyber</option>
-      <option value="Stealth">Stealth</option>
-      <option value="Crimson">Crimson</option>
-    </select>
+    <h3><span style="color:var(--secondary)">></span> System Configuration</h3>
+    <div style="margin-bottom:20px;">
+      <label>Visual Interface Theme</label>
+      <select id="themeSelect" onchange="changeTheme()">
+        <option value="">Neon Cyber (Standard)</option>
+        <option value="Stealth">Stealth Mode</option>
+        <option value="Crimson">Crimson Alert</option>
+      </select>
+    </div>
+    <button onclick="localStorage.clear(); location.reload();" style="background:var(--danger); color:white; border:none; padding:10px; border-radius:8px; cursor:pointer; width:100%; font-weight:bold;">RESET ALL DATA</button>
   </div>
 </div>
 
 <script>
+// AUDIO SYSTEM
 const bgm = new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3");
 bgm.loop = true;
 const clickSfx = new Audio("https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3");
-const upgradeSfx = new Audio("https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3");
+const levelUpSfx = new Audio("https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3");
 
 let audioUnlocked = false;
 
 function unlockAudio() {
   if (audioUnlocked) return;
-  bgm.volume = 0.4;
-  bgm.play().catch(() => {}); // Catch browser block just in case
+  bgm.volume = 0.3;
+  bgm.play().catch(() => {});
   audioUnlocked = true;
 }
 
+// TAB NAVIGATION
 function showTab(id, btn) {
   unlockAudio();
   clickSfx.play();
@@ -158,44 +207,103 @@ function showTab(id, btn) {
   btn.classList.add("active");
 }
 
-function updateProgress() {
+// CORE SYSTEM LOGIC
+function updateSystem() {
   unlockAudio();
   const isAgreed = document.getElementById("agreeCheck").checked;
-  const val = document.getElementById("savingsInput").value;
-  const bar = document.getElementById("savingsBar");
   
-  if(!isAgreed) {
-    bar.style.width = "0%";
-    return;
+  // Milestone 1 Logic
+  const m1Checks = document.querySelectorAll('.m1-check');
+  const m1Done = Array.from(m1Checks).every(c => c.checked);
+  const internetEl = document.getElementById('rewardInternet');
+
+  if (m1Done && isAgreed) {
+    internetEl.style.borderColor = "var(--success)";
+    internetEl.querySelector('.val').innerText = "ONLINE";
+    internetEl.querySelector('.val').style.color = "var(--success)";
+    document.getElementById('m2').classList.remove('locked');
+    document.getElementById('m2').classList.add('active');
+    document.getElementById('savingsInput').disabled = false;
+  } else {
+    internetEl.style.borderColor = "var(--danger)";
+    internetEl.querySelector('.val').innerText = "OFFLINE";
+    internetEl.querySelector('.val').style.color = "var(--danger)";
+    document.getElementById('m2').classList.add('locked');
+    document.getElementById('savingsInput').disabled = true;
   }
 
-  const percent = Math.min((val / 1000) * 100, 100);
-  bar.style.width = percent + "%";
-  
-  localStorage.setItem("savings", val);
-  if(percent >= 100) upgradeSfx.play();
+  // Milestone 2 Logic
+  const savings = document.getElementById('savingsInput').value || 0;
+  const savePercent = Math.min((savings / 1000) * 100, 100);
+  document.getElementById('saveBar').style.width = savePercent + '%';
+
+  if (savePercent >= 100 && m1Done) {
+    document.getElementById('m3').classList.remove('locked');
+    document.getElementById('m3').classList.add('active');
+    if(savings == 1000) levelUpSfx.play();
+  } else {
+    document.getElementById('m3').classList.add('locked');
+  }
+
+  // Milestone 3 Logic
+  const m3Done = document.getElementById('m3_insurance').checked && document.getElementById('m3_work').checked;
+  const vehicleEl = document.getElementById('rewardVehicle');
+  if (m3Done) {
+    vehicleEl.style.borderColor = "var(--success)";
+    vehicleEl.querySelector('.val').innerText = "FULL ACCESS";
+    vehicleEl.querySelector('.val').style.color = "var(--success)";
+  } else {
+    vehicleEl.style.borderColor = "var(--border)";
+    vehicleEl.querySelector('.val').innerText = "WORK ONLY";
+    vehicleEl.querySelector('.val').style.color = "var(--muted)";
+  }
+
+  // Global Progress Percent
+  const allChecks = document.querySelectorAll('input[type="checkbox"]').length;
+  const checked = document.querySelectorAll('input[type="checkbox"]:checked').length;
+  const totalProg = Math.round(((checked / allChecks) * 0.7 + (savePercent / 100) * 0.3) * 100);
+  document.getElementById('globalProgress').innerText = totalProg + '%';
+
+  // Save State
+  const state = {
+    m1: Array.from(m1Checks).map(c => c.checked),
+    savings: savings,
+    m3: [document.getElementById('m3_insurance').checked, document.getElementById('m3_work').checked],
+    agreed: isAgreed
+  };
+  localStorage.setItem("independence_state", JSON.stringify(state));
 }
 
+// THEME SWITCHER
 function changeTheme() {
   unlockAudio();
   clickSfx.play();
-  const theme = document.getElementById("themeSelect").value;
-  theme ? document.body.setAttribute("data-theme", theme) : document.body.removeAttribute("data-theme");
+  const t = document.getElementById("themeSelect").value;
+  t ? document.body.setAttribute("data-theme", t) : document.body.removeAttribute("data-theme");
 }
 
+// CONTRACT UPLOADER
 document.getElementById("contractFile").addEventListener("change", e => {
   const reader = new FileReader();
   reader.onload = () => {
     document.getElementById("contractDisplay").innerText = reader.result;
-    unlockAudio();
     clickSfx.play();
   };
   reader.readAsText(e.target.files[0]);
 });
 
+// INITIAL LOAD
 window.onload = () => {
-  const saved = localStorage.getItem("savings");
-  if(saved) document.getElementById("savingsInput").value = saved;
+  const saved = JSON.parse(localStorage.getItem("independence_state"));
+  if(saved) {
+    const m1Checks = document.querySelectorAll('.m1-check');
+    saved.m1.forEach((v, i) => m1Checks[i].checked = v);
+    document.getElementById('savingsInput').value = saved.savings;
+    document.getElementById('m3_insurance').checked = saved.m3[0];
+    document.getElementById('m3_work').checked = saved.m3[1];
+    document.getElementById('agreeCheck').checked = saved.agreed;
+    updateSystem();
+  }
 }
 </script>
 </body>
